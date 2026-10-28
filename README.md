@@ -1,88 +1,127 @@
-# 🦷 Bee Dental — Clínica Odontológica de Alta Precisión & Estética Dental
+# 🦷 Bee Dental — Sistema Integral de Gestión Clínica & Web Oficial
 
-Sitio web oficial y sistema de agendamiento clínico para **Bee Dental**, diseñado con un enfoque estético de lujo médico, alta conversión y preparado para despliegue instantáneo en **Vercel**.
+Sistema integral para la administración clínica, odontogramas interactivos, agenda y facturación de **Bee Dental** (Sede Plaza Balón, Santo Domingo), desarrollado con **Next.js 14 (App Router)**, **TypeScript estricto**, **Tailwind CSS**, **Prisma ORM**, **Supabase PostgreSQL** y arquitectura serverless lista para desplegar en **Vercel**.
 
-![Bee Dental Preview](screen.png)
-
----
-
-## 🌟 Características Principales
-
-- **Diseño Médico de Alta Gama:** Paleta cromática médica de precisión (`#00685f`, menta esmeralda, acentos ámbar miel y blancos puros). Tipografía combinada *Playfair Display* (títulos de prestigio) y *Plus Jakarta Sans* (lectura clínica nítida).
-- **Responsive 100%:** Navegación optimizada para móviles, tablets y pantallas de escritorio con menú off-canvas interactivo.
-- **Hero & Propuesta de Valor:** Métricas de confianza (+12.000 sonrisas, 4.9★ con +850 reseñas Google, 15+ años de experiencia), insignias flotantes de *Escaneo 3D Sin Moldes* y *Experiencia Zero-Pain*.
-- **Pabellón de Acreditaciones:** Certificaciones ISO 9001:2015, CAD/CAM 3D, Colegiación Oficial y financiación hasta 24 meses 0% de interés.
-- **Catálogo de Especialidades Interactivo:**
-  - Diseño de Sonrisa Digital (DSD)
-  - Ortodoncia Invisible (Alineadores Transparentes)
-  - Implantología Guiada en 24 Horas
-  - Odontología Restauradora & Preventiva
-  - Periodoncia y Terapia de Encías
-  - Odontopediatría Amigable
-- **Galería de Casos Clínicos (Antes y Después):** Transformaciones reales verificadas con tiempos de tratamiento y testimonios de pacientes.
-- **Cuadro Médico Especialista:** Fichas profesionales con fotografía, credenciales, número de colegiado y trayectoria.
-- **Formulario de Agendamiento Inteligente:**
-  - Validación en tiempo real de campos (nombre, teléfono, correo, tratamiento y franja horaria preferida).
-  - Al hacer clic en cualquier servicio del catálogo, el formulario se auto-selecciona con ese tratamiento y hace scroll suave con foco automático.
-  - Confirmación con enlace directo a WhatsApp con mensaje pre-redactado con los datos de la cita.
-- **Preguntas Frecuentes (FAQ Accordion):** Sección interactiva y accesible para despejar dudas comunes sobre la primera cita gratuita, financiación y sedación asistida.
-- **Ubicación & Acceso:** Plaza Balón Ave, Av. Charles de Gaulle 10, Santo Domingo 11404, con acceso directo sobre la avenida, seguridad y estacionamiento reservado para pacientes, más mapa interactivo de Google Maps.
-- **Botón Flotante de WhatsApp:** Conexión en 1 clic con el equipo de coordinación médica.
-- **SEO & Datos Estructurados:** Schema.org (`Dentist`, `MedicalBusiness`), Open Graph y Twitter Cards completos para posicionamiento en Google.
+Incluye tanto la **web oficial de alta conversión** para pacientes como el **Portal Clínico Administrativo** y una **API REST v1** documentada para conectar un agente de WhatsApp Business.
 
 ---
 
-## 🚀 Despliegue en Vercel (1 Clic)
+## 🌟 Módulos y Funcionalidades del Sistema
 
-Este proyecto está 100% optimizado para Vercel:
+### 1. Portal Web Público (Landing & Reserva)
+- **Diseño Médico de Alta Precisión:** Paleta esmeralda (`#00685f`), contenedores en azul suave (`#f8f9ff`) y acentos dorados/ámbar. Tipografías *Playfair Display* y *Plus Jakarta Sans*.
+- **Agendamiento Inteligente:** Formulario interactivo que consulta y envía solicitudes directamente a `/api/v1/appointments`.
+- **Botón Flotante de WhatsApp:** Conexión directa al número oficial **849-632-3258** con mensaje predeterminado.
+- **Ubicación & Google Maps:** Plaza Balón Ave, Av. Charles de Gaulle 10, Santo Domingo 11404.
 
-1. Ve a [Vercel](https://vercel.com) e inicia sesión con tu cuenta de GitHub.
-2. Haz clic en **"Add New..."** → **"Project"**.
-3. Selecciona el repositorio: `https://github.com/ylbani/bee_dental.git`.
-4. Deja la configuración por defecto (Vercel detectará automáticamente la configuración de `vercel.json`).
-5. Haz clic en **Deploy**. ¡Tu clínica estará online en menos de 30 segundos!
+### 2. Panel Principal (Dashboard Clínico)
+- Indicadores en tiempo real: Citas del día, pacientes atendidos vs en espera, ocupación de sillones (88%), ingresos del día y mes en Pesos Dominicanos (DOP) y saldos por cobrar.
+- Flujo de pacientes en vivo con estados de atención y filtros por periodo (Hoy, Semana, Mes).
+
+### 3. Pacientes y Expediente Clínico Longitudinal
+- Búsqueda predictiva por nombre, cédula dominicana (`402-XXXXXXX-X`), expediente (`EXP-XXXX`) o teléfono.
+- Detección de duplicados y ficha integral del paciente.
+- Historial médico con alertas clínicas: hipertensión, diabetes, alergias a anestesia y medicaciones.
+- Consultas odontológicas con notas y adendas inmutables con autor y fecha.
+
+### 4. Odontograma Gráfico Interactivo (SVG Nativo FDI)
+- Representación anatómica en vector SVG de dentición permanente (piezas 11 a 48) y temporal (51 a 85).
+- Desglose por 5 superficies dentales: Oclusal/Incisal, Mesial, Distal, Vestibular y Lingual/Palatina.
+- Registro modal de afecciones: Caries, Restauración, Endodoncia, Corona, Implante, Ausencia, Fractura, Sellante.
+- Diferenciación visual entre procedimientos planificados (pendiente) y realizados, con historial fechado e impresión.
+
+### 5. Calendario y Agenda Dinámica
+- Vistas por Día, Semana, Mes y Agenda.
+- Filtro por profesional (Dr. Michael Chen, Dra. Elena Ruiz, Dr. Carlos Morales) y consultorios/sillones.
+- Prevención de solapamientos con validación serverless en zona horaria `America/Santo_Domingo`.
+
+### 6. Catálogo de Servicios y Procedimientos
+- Catálogo administrable con tarifas base en RD$ (DOP), duración estimada en minutos y requerimiento de cita.
+- Categorías: Estética Dental (DSD), Ortodoncia, Cirugía e Implantes, Prevención, Urgencias, Pediatría.
+
+### 7. Facturación, Cobros y Cuentas por Cobrar
+- Emisión de facturas correlativas (`FAC-XXXXX`) con desglose de servicios, descuentos y copagos.
+- Registro de cobros (Efectivo, Tarjeta, Transferencia) con soporte para abonos parciales y saldo restante.
+
+### 8. Módulo de Seguros Médicos (ARS Dominicanas)
+- Interruptor general en configuración para habilitar o deshabilitar el módulo según la política de la clínica.
+- Soporte para ARS dominicanas: ARS Senasa, Primera ARS, Mapfre Salud, con cálculo de copagos y reclamaciones.
+
+### 9. Usuarios, Roles y Permisos (RBAC)
+- Roles predefinidos: Administrador, Recepcionista, Odontólogo, Asistente Dental, Caja y Auditor.
+- Aislamiento multi-tenant por clínica y validación estricta de permisos en el servidor.
+
+### 10. Auditoría Inmutable
+- Trazabilidad criptográfica de accesos, creación de expedientes, cambios en odontogramas y cobros con usuario, fecha e IP.
+
+---
+
+## 🤖 API REST v1 para Agente de WhatsApp y Web
+
+La API está versionada bajo `/api/v1` y protegida con validación Zod:
+
+| Método | Endpoint | Descripción |
+| :--- | :--- | :--- |
+| `GET` | `/api/v1/availability?date=YYYY-MM-DD` | Devuelve horarios disponibles reales sin filtrar datos privados de otros pacientes. |
+| `POST` | `/api/v1/appointments` | Reserva transaccional con soporte para cabecera `x-idempotency-key` para evitar duplicados. |
+| `GET` | `/api/v1/services` | Catálogo de servicios activos con tarifas y duraciones en DOP para el bot conversacional. |
 
 ---
 
-## 💻 Desarrollo Local
+## 🛠️ Desarrollo Local
 
-Para previsualizar o modificar localmente:
+1. Clona el repositorio:
+   ```bash
+   git clone https://github.com/ylbani/bee_dental.git
+   cd bee_dental
+   ```
 
-```bash
-# Opción 1: Abrir directamente en el navegador
-start index.html
+2. Instala dependencias:
+   ```bash
+   npm install
+   ```
 
-# Opción 2: Con servidor local
-npx serve .
-# o
-npm run dev
-```
+3. Configura las variables de entorno:
+   ```bash
+   cp .env.example .env
+   ```
+
+4. Genera el cliente de Prisma:
+   ```bash
+   npx prisma generate
+   ```
+
+5. Inicia el servidor de desarrollo:
+   ```bash
+   npm run dev
+   ```
+   Abre [http://localhost:3000](http://localhost:3000) para la Web pública o [http://localhost:3000/dashboard](http://localhost:3000/dashboard) para el Portal Clínico.
+
+6. Ejecuta la suite de pruebas automatizadas:
+   ```bash
+   npm test
+   ```
+
+---
+
+## 🚀 Despliegue en Vercel (Producción)
+
+1. Ve a [Vercel](https://vercel.com) e importa el repositorio `ylbani/bee_dental`.
+2. Configura las variables de entorno en Vercel (`Project Settings` → `Environment Variables`):
+   - `DATABASE_URL`: URL del pooler de Supabase (`postgresql://...`).
+   - `DIRECT_URL`: URL directa de Supabase (`postgresql://...`).
+   - `NEXT_PUBLIC_SUPABASE_URL`: URL de tu proyecto Supabase.
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Clave pública anon de Supabase.
+   - `SUPABASE_SERVICE_ROLE_KEY`: Clave privada service_role.
+   - `INTEGRATION_API_KEY_SECRET`: Clave secreta para autorizar bots de WhatsApp.
+3. Haz clic en **Deploy**. El comando `prisma generate && next build` se ejecutará automáticamente optimizando las 20 rutas serverless.
 
 ---
 
-## ⚙️ Estructura del Proyecto
+## 📞 Contacto de la Clínica
 
-```text
-├── index.html           # Landing page principal completa y estilizada
-├── vercel.json          # Reglas de caché, cleanUrls y cabeceras de seguridad
-├── package.json         # Configuración y scripts npm
-├── DESIGN.md            # Especificaciones y tokens del sistema de diseño
-├── screen.png           # Captura de referencia del diseño
-├── logo.png / logob.png # Logotipos y recursos de la marca
-└── README.md            # Documentación del proyecto
-```
-
----
-
-## 📞 Personalización de Contacto
-
-Para cambiar el número de teléfono o WhatsApp de la clínica, busca y reemplaza en `index.html`:
-- Teléfono actual: `849-632-3258`
-- Enlace de WhatsApp: `https://wa.me/18496323258`
-- Correo: `contacto@beedental.es`
-- Dirección: `Plaza Balón Ave, Av. Charles de Gaulle 10, Santo Domingo 11404`
-
----
+- **Sede:** Plaza Balón Ave, Av. Charles de Gaulle 10, Santo Domingo 11404
+- **Teléfono y WhatsApp:** 849-632-3258 (`+1 849 632 3258`)
+- **Correo:** contacto@beedental.es
 
 © 2025 Bee Dental S.L. Todos los derechos reservados.
-

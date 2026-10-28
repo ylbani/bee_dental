@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "description": "Sitio web oficial y sistema de agendamiento para Bee Dental Madrid - Perfilando tu sonrisa con precisión y calidez.",
   "scripts": {
-    "start": "npx serve .",
-    "dev": "npx serve ."
+    "dev": "next dev",
+    "build": "prisma generate && next build",
+    "start": "next start",
+    "test": "node --test tests/*.test.mjs"
   },
   "keywords": [
     "dental",
@@ -15,6 +17,28 @@
     "vercel"
   ],
   "author": "Bee Dental",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.118.0",
+    "autoprefixer": "^10.6.2",
+    "clsx": "^2.1.1",
+    "date-fns": "^3.6.0",
+    "lucide-react": "^1.62.0",
+    "next": "^14.2.18",
+    "postcss": "^8.5.32",
+    "prisma": "^5.22.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwind-merge": "^3.7.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.43",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "tailwindcss": "^3.4.19",
+    "typescript": "^5.9.3"
+  }
 }
-
