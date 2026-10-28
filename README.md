@@ -77,8 +77,8 @@ npm run dev
 ## 📞 Personalización de Contacto
 
 Para cambiar el número de teléfono o WhatsApp de la clínica, busca y reemplaza en `index.html`:
-- Teléfono actual: `+34 912 345 678`
-- Enlace de WhatsApp: `https://wa.me/34912345678`
+- Teléfono actual: `849-632-3258`
+- Enlace de WhatsApp: `https://wa.me/18496323258`
 - Correo: `contacto@beedental.es`
 - Dirección: `Plaza Balón Ave, Av. Charles de Gaulle 10, Santo Domingo 11404`
 
