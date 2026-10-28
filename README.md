@@ -26,7 +26,7 @@ Sitio web oficial y sistema de agendamiento clínico para **Bee Dental**, diseñ
   - Al hacer clic en cualquier servicio del catálogo, el formulario se auto-selecciona con ese tratamiento y hace scroll suave con foco automático.
   - Confirmación con enlace directo a WhatsApp con mensaje pre-redactado con los datos de la cita.
 - **Preguntas Frecuentes (FAQ Accordion):** Sección interactiva y accesible para despejar dudas comunes sobre la primera cita gratuita, financiación y sedación asistida.
-- **Ubicación & Acceso:** Paseo de la Castellana 142, Madrid, con indicaciones de Metro (Línea 10), autobuses EMT, convenio de aparcamiento gratuito Saba y enlace directo a Google Maps.
+- **Ubicación & Acceso:** Plaza Balón Ave, Av. Charles de Gaulle 10, Santo Domingo 11404, con acceso directo sobre la avenida, seguridad y estacionamiento reservado para pacientes, más mapa interactivo de Google Maps.
 - **Botón Flotante de WhatsApp:** Conexión en 1 clic con el equipo de coordinación médica.
 - **SEO & Datos Estructurados:** Schema.org (`Dentist`, `MedicalBusiness`), Open Graph y Twitter Cards completos para posicionamiento en Google.
 
@@ -80,8 +80,9 @@ Para cambiar el número de teléfono o WhatsApp de la clínica, busca y reemplaz
 - Teléfono actual: `+34 912 345 678`
 - Enlace de WhatsApp: `https://wa.me/34912345678`
 - Correo: `contacto@beedental.es`
-- Dirección: `Paseo de la Castellana 142, Planta 1ª, 28046 Madrid`
+- Dirección: `Plaza Balón Ave, Av. Charles de Gaulle 10, Santo Domingo 11404`
 
 ---
 
 © 2025 Bee Dental S.L. Todos los derechos reservados.
+
