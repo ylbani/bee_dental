@@ -1,0 +1,19 @@
+{
+  "name": "bee-dental",
+  "version": "1.0.0",
+  "description": "Sitio web oficial y sistema de agendamiento para Bee Dental Madrid - Perfilando tu sonrisa con precisión y calidez.",
+  "scripts": {
+    "start": "npx serve .",
+    "dev": "npx serve ."
+  },
+  "keywords": [
+    "dental",
+    "clinica-dental",
+    "bee-dental",
+    "madrid",
+    "landing-page",
+    "vercel"
+  ],
+  "author": "Bee Dental",
+  "license": "MIT"
+}
