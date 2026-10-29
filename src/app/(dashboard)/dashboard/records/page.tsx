@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   FileText,
@@ -15,6 +15,7 @@ import {
   Pill,
   Smile,
   CheckCircle,
+  Trash2,
 } from "lucide-react";
 
 interface ClinicalRecordItem {
@@ -34,47 +35,18 @@ export default function RecordsPage() {
   const [search, setSearch] = useState("");
   const [selectedRecord, setSelectedRecord] = useState<ClinicalRecordItem | null>(null);
   const [showNewEvolutionModal, setShowNewEvolutionModal] = useState(false);
+  const [records, setRecords] = useState<ClinicalRecordItem[]>([]);
 
-  const initialRecords: ClinicalRecordItem[] = [
-    {
-      id: "rec-1",
-      patient: "Laura Martínez Gómez",
-      recordNumber: "EXP-0142",
-      doctor: "Dra. Leticia Bueno",
-      date: "27 Octubre 2026",
-      reason: "Revisión mensual de alineadores y escaneo 3D intraoral",
-      diagnosis: "Apiñamiento anteroinferior en fase 4 de alineación. Oclusión clase I.",
-      treatment: "Entrega de juego de alineadores 7 a 10. Se realiza IPR de 0.2mm entre piezas 31-41.",
-      prescription: "Enjuague con clorhexidina 0.12% tras cepillado nocturno por 7 días.",
-      status: "CERRADA",
-    },
-    {
-      id: "rec-2",
-      patient: "Carlos Henríquez Peña",
-      recordNumber: "EXP-0211",
-      doctor: "Dra. Leticia Bueno",
-      date: "27 Octubre 2026",
-      reason: "Colocación de implante unitario titanio pieza 36 con cirugía guiada 3D",
-      diagnosis: "Edentulismo parcial mandibular izquierdo.",
-      treatment: "Apertura de colgajo mínimo con férula quirúrgica. Colocación de implante Straumann BLT 4.1x10mm. Torque inserción 35Ncm. Tornillo de cicatrización colocado.",
-      prescription: "Amoxicilina + Ácido Clavulánico 875/125mg cada 8h x 7 días. Dexketoprofeno 25mg si dolor.",
-      status: "EN PROCESO",
-    },
-    {
-      id: "rec-3",
-      patient: "Lucía Gómez Rosario",
-      recordNumber: "EXP-0089",
-      doctor: "Dra. Leticia Bueno",
-      date: "25 Octubre 2026",
-      reason: "Toma de impresión óptica DSD para carillas cerámicas E-Max",
-      diagnosis: "Desgaste del borde incisal y diastemas anterosuperiores.",
-      treatment: "Escaneo óptico CAD/CAM 3D con escáner intraoral. Aprobación del mockup digital por la paciente. Preparación conservadora sin tallado.",
-      prescription: "Ninguna requerida en esta sesión.",
-      status: "CERRADA",
-    },
-  ];
-
-  const [records, setRecords] = useState<ClinicalRecordItem[]>(initialRecords);
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("bee_custom_records");
+      if (stored) {
+        setRecords(JSON.parse(stored));
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
 
   const [newEvolution, setNewEvolution] = useState({
     patient: "",
@@ -92,7 +64,7 @@ export default function RecordsPage() {
       patient: newEvolution.patient,
       recordNumber: newEvolution.recordNumber || `EXP-${Math.floor(1000 + Math.random() * 9000)}`,
       doctor: "Dra. Leticia Bueno",
-      date: "Hoy",
+      date: new Date().toLocaleDateString("es-ES"),
       reason: newEvolution.reason,
       diagnosis: newEvolution.diagnosis,
       treatment: newEvolution.treatment,
@@ -100,7 +72,15 @@ export default function RecordsPage() {
       status: "CERRADA",
     };
 
-    setRecords([created, ...records]);
+    const next = [created, ...records];
+    setRecords(next);
+
+    try {
+      localStorage.setItem("bee_custom_records", JSON.stringify(next));
+    } catch (e) {
+      console.error(e);
+    }
+
     setShowNewEvolutionModal(false);
     setNewEvolution({
       patient: "",
@@ -110,6 +90,17 @@ export default function RecordsPage() {
       treatment: "",
       prescription: "",
     });
+  };
+
+  const handleClearAllRecords = () => {
+    if (confirm("¿Deseas vaciar los expedientes clínicos de prueba?")) {
+      setRecords([]);
+      try {
+        localStorage.removeItem("bee_custom_records");
+      } catch (e) {
+        console.error(e);
+      }
+    }
   };
 
   const filtered = records.filter(
@@ -131,13 +122,25 @@ export default function RecordsPage() {
           </p>
         </div>
 
-        <button
-          onClick={() => setShowNewEvolutionModal(true)}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary text-white text-xs sm:text-sm font-bold rounded-xl shadow-md hover:bg-primary-container transition-all"
-        >
-          <Plus size={16} />
-          <span>Nueva Entrada Clínica</span>
-        </button>
+        <div className="flex items-center gap-2">
+          {records.length > 0 && (
+            <button
+              onClick={handleClearAllRecords}
+              className="px-3 py-2 rounded-xl border border-surface-container-high text-xs font-bold text-rose-700 hover:bg-rose-50 transition-colors flex items-center gap-1.5"
+            >
+              <Trash2 size={14} />
+              <span>Limpiar Datos</span>
+            </button>
+          )}
+
+          <button
+            onClick={() => setShowNewEvolutionModal(true)}
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary text-white text-xs sm:text-sm font-bold rounded-xl shadow-md hover:bg-primary-container transition-all"
+          >
+            <Plus size={16} />
+            <span>Nueva Entrada Clínica</span>
+          </button>
+        </div>
       </div>
 
       <div className="bg-surface-container-lowest p-4 rounded-2xl border border-surface-container-high/80 shadow-sm flex items-center justify-between">
@@ -153,52 +156,73 @@ export default function RecordsPage() {
         </div>
       </div>
 
-      <div className="space-y-3">
-        {filtered.map((r) => (
-          <div
-            key={r.id}
-            className="p-5 bg-surface-container-lowest rounded-2xl border border-surface-container-high/80 shadow-sm hover:shadow-md transition-shadow flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-          >
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-xl bg-primary-fixed flex items-center justify-center text-primary shrink-0">
-                <FileText size={20} />
-              </div>
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-2">
-                  <span className="font-display font-bold text-base text-on-surface">{r.patient}</span>
-                  <span className="text-xs font-mono font-bold text-primary bg-primary-fixed/30 px-2 py-0.5 rounded">
-                    {r.recordNumber}
-                  </span>
-                </div>
-                <p className="text-xs sm:text-sm text-on-surface-variant">{r.reason}</p>
-                <div className="flex items-center gap-3 text-xs text-on-surface-variant/70 mt-1">
-                  <span>Atendido por: {r.doctor}</span>
-                  <span>•</span>
-                  <span>{r.date}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 self-end sm:self-center">
-              <span
-                className={`px-2.5 py-1 rounded-full text-xs font-bold ${
-                  r.status === "CERRADA"
-                    ? "bg-emerald-100 text-emerald-800"
-                    : "bg-blue-100 text-blue-800"
-                }`}
-              >
-                {r.status}
-              </span>
-              <button
-                onClick={() => setSelectedRecord(r)}
-                className="px-3 py-1.5 rounded-xl bg-surface-container text-primary font-bold text-xs hover:bg-surface-container-high transition-colors"
-              >
-                Ver Notas
-              </button>
-            </div>
+      {filtered.length === 0 ? (
+        <div className="bg-surface-container-lowest rounded-2xl border border-surface-container-high/80 p-12 text-center space-y-4 shadow-sm">
+          <div className="w-16 h-16 rounded-full bg-primary-fixed/30 text-primary flex items-center justify-center mx-auto">
+            <FileText size={32} />
           </div>
-        ))}
-      </div>
+          <div>
+            <h3 className="font-display font-bold text-base text-on-surface">Base de Expedientes Limpia</h3>
+            <p className="text-xs text-on-surface-variant max-w-md mx-auto mt-1">
+              No hay notas ni evoluciones clínicas de prueba. Haz clic en &quot;Nueva Entrada Clínica&quot; para asentar la primera consulta.
+            </p>
+          </div>
+          <button
+            onClick={() => setShowNewEvolutionModal(true)}
+            className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-primary text-white text-xs font-bold rounded-xl shadow-md hover:bg-primary-container"
+          >
+            <Plus size={16} />
+            <span>Añadir Primera Entrada</span>
+          </button>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {filtered.map((r) => (
+            <div
+              key={r.id}
+              className="p-5 bg-surface-container-lowest rounded-2xl border border-surface-container-high/80 shadow-sm hover:shadow-md transition-shadow flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+            >
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-xl bg-primary-fixed flex items-center justify-center text-primary shrink-0">
+                  <FileText size={20} />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-display font-bold text-base text-on-surface">{r.patient}</span>
+                    <span className="text-xs font-mono font-bold text-primary bg-primary-fixed/30 px-2 py-0.5 rounded">
+                      {r.recordNumber}
+                    </span>
+                  </div>
+                  <p className="text-xs sm:text-sm text-on-surface-variant">{r.reason}</p>
+                  <div className="flex items-center gap-3 text-xs text-on-surface-variant/70 mt-1">
+                    <span>Atendido por: {r.doctor}</span>
+                    <span>•</span>
+                    <span>{r.date}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 self-end sm:self-center">
+                <span
+                  className={`px-2.5 py-1 rounded-full text-xs font-bold ${
+                    r.status === "CERRADA"
+                      ? "bg-emerald-100 text-emerald-800"
+                      : "bg-blue-100 text-blue-800"
+                  }`}
+                >
+                  {r.status}
+                </span>
+                <button
+                  onClick={() => setSelectedRecord(r)}
+                  className="px-3 py-1.5 rounded-xl bg-surface-container text-primary font-bold text-xs hover:bg-surface-container-high transition-colors"
+                >
+                  Ver Notas
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Clinical Record Notes Modal */}
       {selectedRecord && (
@@ -234,7 +258,7 @@ export default function RecordsPage() {
 
               <div className="p-3.5 bg-surface-container-low rounded-xl space-y-1">
                 <span className="text-xs font-bold uppercase text-on-surface-variant tracking-wider">
-                  Diagnóstico Clínico
+                  Diagnóstico Odontológico
                 </span>
                 <p className="text-on-surface font-medium">{selectedRecord.diagnosis}</p>
               </div>
@@ -295,7 +319,7 @@ export default function RecordsPage() {
                   <input
                     type="text"
                     required
-                    placeholder="Ej. Laura Martínez"
+                    placeholder="Ej. Carmen Santana"
                     value={newEvolution.patient}
                     onChange={(e) => setNewEvolution({ ...newEvolution, patient: e.target.value })}
                     className="w-full h-10 px-3 bg-surface-container-low rounded-xl text-xs border border-surface-container-high focus:outline-none focus:ring-2 focus:ring-primary"

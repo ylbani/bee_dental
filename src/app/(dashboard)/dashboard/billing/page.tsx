@@ -14,6 +14,7 @@ import {
   X,
   CreditCard,
   Building2,
+  Trash2,
 } from "lucide-react";
 
 export interface InvoiceItem {
@@ -36,74 +37,13 @@ export default function BillingPage() {
   const [selectedInvoice, setSelectedInvoice] = useState<InvoiceItem | null>(null);
   const [paymentModalInvoice, setPaymentModalInvoice] = useState<InvoiceItem | null>(null);
   const [paymentAmount, setPaymentAmount] = useState<number>(0);
-
-  const initialInvoices: InvoiceItem[] = [
-    {
-      id: "inv-1",
-      invoiceNumber: "FAC-00412",
-      patientName: "Laura Martínez Gómez",
-      recordNumber: "EXP-0142",
-      issueDate: "27/10/2026",
-      totalDop: 65000,
-      insuranceCoveredDop: 0,
-      patientPortionDop: 65000,
-      paidAmountDop: 65000,
-      balanceDop: 0,
-      status: "PAID",
-      paymentMethod: "Tarjeta de Crédito",
-    },
-    {
-      id: "inv-2",
-      invoiceNumber: "FAC-00413",
-      patientName: "Carlos Henríquez Peña",
-      recordNumber: "EXP-0211",
-      issueDate: "27/10/2026",
-      totalDop: 45000,
-      insuranceCoveredDop: 0,
-      patientPortionDop: 45000,
-      paidAmountDop: 30000,
-      balanceDop: 15000,
-      status: "PARTIALLY_PAID",
-      paymentMethod: "Abono Inicial (Transferencia)",
-    },
-    {
-      id: "inv-3",
-      invoiceNumber: "FAC-00414",
-      patientName: "Ramón Valdez Cruz",
-      recordNumber: "EXP-0305",
-      issueDate: "26/10/2026",
-      totalDop: 3500,
-      insuranceCoveredDop: 0,
-      patientPortionDop: 3500,
-      paidAmountDop: 0,
-      balanceDop: 3500,
-      status: "ISSUED",
-      paymentMethod: "Pendiente en Caja",
-    },
-    {
-      id: "inv-4",
-      invoiceNumber: "FAC-00415",
-      patientName: "Lucía Gómez Rosario",
-      recordNumber: "EXP-0089",
-      issueDate: "25/10/2026",
-      totalDop: 15000,
-      insuranceCoveredDop: 0,
-      patientPortionDop: 15000,
-      paidAmountDop: 15000,
-      balanceDop: 0,
-      status: "PAID",
-      paymentMethod: "Efectivo",
-    },
-  ];
-
-  const [invoices, setInvoices] = useState<InvoiceItem[]>(initialInvoices);
+  const [invoices, setInvoices] = useState<InvoiceItem[]>([]);
 
   useEffect(() => {
     try {
       const stored = localStorage.getItem("bee_custom_invoices");
       if (stored) {
-        const parsed: InvoiceItem[] = JSON.parse(stored);
-        setInvoices([...parsed, ...initialInvoices]);
+        setInvoices(JSON.parse(stored));
       }
     } catch (e) {
       console.error(e);
@@ -114,24 +54,40 @@ export default function BillingPage() {
     e.preventDefault();
     if (!paymentModalInvoice) return;
 
-    setInvoices((prev) =>
-      prev.map((inv) => {
-        if (inv.id === paymentModalInvoice.id) {
-          const newPaid = inv.paidAmountDop + Number(paymentAmount);
-          const newBalance = Math.max(0, inv.totalDop - newPaid);
-          const newStatus = newBalance === 0 ? "PAID" : "PARTIALLY_PAID";
-          return {
-            ...inv,
-            paidAmountDop: newPaid,
-            balanceDop: newBalance,
-            status: newStatus,
-          };
-        }
-        return inv;
-      })
-    );
+    const updated = invoices.map((inv) => {
+      if (inv.id === paymentModalInvoice.id) {
+        const newPaid = inv.paidAmountDop + Number(paymentAmount);
+        const newBalance = Math.max(0, inv.totalDop - newPaid);
+        const newStatus: "PAID" | "PARTIALLY_PAID" = newBalance === 0 ? "PAID" : "PARTIALLY_PAID";
+        return {
+          ...inv,
+          paidAmountDop: newPaid,
+          balanceDop: newBalance,
+          status: newStatus,
+        };
+      }
+      return inv;
+    });
+
+    setInvoices(updated);
+    try {
+      localStorage.setItem("bee_custom_invoices", JSON.stringify(updated));
+    } catch (e) {
+      console.error(e);
+    }
 
     setPaymentModalInvoice(null);
+  };
+
+  const handleClearInvoices = () => {
+    if (confirm("¿Deseas vaciar todas las facturas y comprobantes de prueba?")) {
+      setInvoices([]);
+      try {
+        localStorage.removeItem("bee_custom_invoices");
+      } catch (e) {
+        console.error(e);
+      }
+    }
   };
 
   const filtered = invoices.filter(
@@ -150,20 +106,32 @@ export default function BillingPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="font-display text-2xl sm:text-3xl font-bold text-on-surface">
-            Facturación, Cobros y Cuentas por Cobrar
+            Facturación, Cobros y Caja
           </h1>
           <p className="text-xs sm:text-sm text-on-surface-variant mt-0.5">
             Emisión de comprobantes fiscales, registro de abonos y control de caja en DOP
           </p>
         </div>
 
-        <Link
-          href="/dashboard/billing/new"
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary text-white text-xs sm:text-sm font-bold rounded-xl shadow-md hover:bg-primary-container transition-all"
-        >
-          <Plus size={16} />
-          <span>Emitir Nueva Factura</span>
-        </Link>
+        <div className="flex items-center gap-2">
+          {invoices.length > 0 && (
+            <button
+              onClick={handleClearInvoices}
+              className="px-3 py-2 rounded-xl border border-surface-container-high text-xs font-bold text-rose-700 hover:bg-rose-50 transition-colors flex items-center gap-1.5"
+            >
+              <Trash2 size={14} />
+              <span>Limpiar Datos</span>
+            </button>
+          )}
+
+          <Link
+            href="/dashboard/billing/new"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary text-white text-xs sm:text-sm font-bold rounded-xl shadow-md hover:bg-primary-container transition-all"
+          >
+            <Plus size={16} />
+            <span>Emitir Nueva Factura</span>
+          </Link>
+        </div>
       </div>
 
       {/* KPI Cards */}
@@ -215,97 +183,117 @@ export default function BillingPage() {
 
       {/* Invoices Table */}
       <div className="bg-surface-container-lowest rounded-2xl border border-surface-container-high/80 overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs sm:text-sm">
-            <thead>
-              <tr className="border-b border-surface-container-high bg-surface-container-low/50 text-on-surface-variant font-bold text-xs">
-                <th className="py-3 px-4">No. Factura</th>
-                <th className="py-3 px-4">Paciente</th>
-                <th className="py-3 px-4">Fecha</th>
-                <th className="py-3 px-4">Total</th>
-                <th className="py-3 px-4">Cobrado</th>
-                <th className="py-3 px-4">Saldo Pendiente</th>
-                <th className="py-3 px-4 text-center">Estado</th>
-                <th className="py-3 px-4 text-right">Acciones</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-surface-container-low">
-              {filtered.map((inv) => (
-                <tr key={inv.id} className="hover:bg-surface-container-low/40 transition-colors">
-                  <td className="py-3.5 px-4 font-mono font-bold text-primary">{inv.invoiceNumber}</td>
-                  <td className="py-3.5 px-4">
-                    <div className="flex flex-col">
-                      <span className="font-bold text-on-surface">{inv.patientName}</span>
-                      <span className="text-[11px] text-on-surface-variant">{inv.recordNumber}</span>
-                    </div>
-                  </td>
-                  <td className="py-3.5 px-4 text-on-surface-variant">{inv.issueDate}</td>
-                  <td className="py-3.5 px-4 font-mono font-bold text-on-surface">
-                    RD$ {inv.totalDop.toLocaleString("es-DO", { minimumFractionDigits: 2 })}
-                  </td>
-                  <td className="py-3.5 px-4 font-mono text-emerald-700">
-                    RD$ {inv.paidAmountDop.toLocaleString("es-DO", { minimumFractionDigits: 2 })}
-                  </td>
-                  <td className="py-3.5 px-4">
-                    {inv.balanceDop > 0 ? (
-                      <span className="text-amber-800 font-bold bg-amber-50 px-2 py-0.5 rounded">
-                        RD$ {inv.balanceDop.toLocaleString("es-DO", { minimumFractionDigits: 2 })}
-                      </span>
-                    ) : (
-                      <span className="text-emerald-700 font-semibold">RD$ 0.00</span>
-                    )}
-                  </td>
-                  <td className="py-3.5 px-4 text-center">
-                    <span
-                      className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${
-                        inv.status === "PAID"
-                          ? "bg-emerald-100 text-emerald-800"
-                          : inv.status === "PARTIALLY_PAID"
-                          ? "bg-amber-100 text-amber-800"
-                          : "bg-blue-100 text-blue-800"
-                      }`}
-                    >
-                      {inv.status === "PAID"
-                        ? "Pagada"
-                        : inv.status === "PARTIALLY_PAID"
-                        ? "Abono Parcial"
-                        : "Emitida"}
-                    </span>
-                  </td>
-                  <td className="py-3.5 px-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      {inv.balanceDop > 0 && (
-                        <button
-                          onClick={() => {
-                            setPaymentModalInvoice(inv);
-                            setPaymentAmount(inv.balanceDop);
-                          }}
-                          className="px-2.5 py-1 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold text-xs rounded-lg transition-colors"
-                        >
-                          Abonar
-                        </button>
-                      )}
-                      <button
-                        onClick={() => setSelectedInvoice(inv)}
-                        className="p-1.5 rounded-lg border border-surface-container-high hover:bg-surface-container text-on-surface-variant transition-colors"
-                        title="Ver Comprobante / Imprimir"
-                      >
-                        <Printer size={15} />
-                      </button>
-                    </div>
-                  </td>
+        {filtered.length === 0 ? (
+          <div className="p-12 text-center space-y-4">
+            <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center mx-auto">
+              <Receipt size={32} />
+            </div>
+            <div>
+              <h3 className="font-display font-bold text-base text-on-surface">Caja y Facturación Limpia</h3>
+              <p className="text-xs text-on-surface-variant max-w-md mx-auto mt-1">
+                No hay facturas ni cuentas pendientes de prueba. Haz clic en &quot;Emitir Nueva Factura&quot; para registrar un cobro clínico.
+              </p>
+            </div>
+            <Link
+              href="/dashboard/billing/new"
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-primary text-white text-xs font-bold rounded-xl shadow-md hover:bg-primary-container"
+            >
+              <Plus size={16} />
+              <span>Emitir Primer Comprobante</span>
+            </Link>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs sm:text-sm">
+              <thead>
+                <tr className="border-b border-surface-container-high bg-surface-container-low/50 text-on-surface-variant font-bold text-xs">
+                  <th className="py-3 px-4">No. Factura</th>
+                  <th className="py-3 px-4">Paciente</th>
+                  <th className="py-3 px-4">Fecha</th>
+                  <th className="py-3 px-4">Total</th>
+                  <th className="py-3 px-4">Cobrado</th>
+                  <th className="py-3 px-4">Saldo Pendiente</th>
+                  <th className="py-3 px-4 text-center">Estado</th>
+                  <th className="py-3 px-4 text-right">Acciones</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-surface-container-low">
+                {filtered.map((inv) => (
+                  <tr key={inv.id} className="hover:bg-surface-container-low/40 transition-colors">
+                    <td className="py-3.5 px-4 font-mono font-bold text-primary">{inv.invoiceNumber}</td>
+                    <td className="py-3.5 px-4">
+                      <div className="flex flex-col">
+                        <span className="font-bold text-on-surface">{inv.patientName}</span>
+                        <span className="text-[11px] text-on-surface-variant">{inv.recordNumber}</span>
+                      </div>
+                    </td>
+                    <td className="py-3.5 px-4 text-on-surface-variant">{inv.issueDate}</td>
+                    <td className="py-3.5 px-4 font-mono font-bold text-on-surface">
+                      RD$ {inv.totalDop.toLocaleString("es-DO", { minimumFractionDigits: 2 })}
+                    </td>
+                    <td className="py-3.5 px-4 font-mono text-emerald-700">
+                      RD$ {inv.paidAmountDop.toLocaleString("es-DO", { minimumFractionDigits: 2 })}
+                    </td>
+                    <td className="py-3.5 px-4">
+                      {inv.balanceDop > 0 ? (
+                        <span className="text-amber-800 font-bold bg-amber-50 px-2 py-0.5 rounded">
+                          RD$ {inv.balanceDop.toLocaleString("es-DO", { minimumFractionDigits: 2 })}
+                        </span>
+                      ) : (
+                        <span className="text-emerald-700 font-semibold">RD$ 0.00</span>
+                      )}
+                    </td>
+                    <td className="py-3.5 px-4 text-center">
+                      <span
+                        className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${
+                          inv.status === "PAID"
+                            ? "bg-emerald-100 text-emerald-800"
+                            : inv.status === "PARTIALLY_PAID"
+                            ? "bg-amber-100 text-amber-800"
+                            : "bg-blue-100 text-blue-800"
+                        }`}
+                      >
+                        {inv.status === "PAID"
+                          ? "Pagada"
+                          : inv.status === "PARTIALLY_PAID"
+                          ? "Abono Parcial"
+                          : "Emitida"}
+                      </span>
+                    </td>
+                    <td className="py-3.5 px-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        {inv.balanceDop > 0 && (
+                          <button
+                            onClick={() => {
+                              setPaymentModalInvoice(inv);
+                              setPaymentAmount(inv.balanceDop);
+                            }}
+                            className="px-2.5 py-1 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold text-xs rounded-lg transition-colors"
+                          >
+                            Abonar
+                          </button>
+                        )}
+                        <button
+                          onClick={() => setSelectedInvoice(inv)}
+                          className="p-1.5 rounded-lg border border-surface-container-high hover:bg-surface-container text-on-surface-variant transition-colors"
+                          title="Ver Comprobante / Imprimir"
+                        >
+                          <Printer size={15} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {/* Invoice Printable View Modal */}
       {selectedInvoice && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-surface-container-lowest rounded-3xl border border-surface-container-high max-w-lg w-full p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in-95">
-            {/* Header */}
             <div className="flex items-start justify-between pb-4 border-b border-surface-container-high">
               <div className="flex items-center gap-2">
                 <img src="/logo.png" alt="Bee Dental" className="h-8 w-auto object-contain" />
@@ -318,7 +306,6 @@ export default function BillingPage() {
               </button>
             </div>
 
-            {/* Bill Details */}
             <div className="space-y-4 text-xs">
               <div className="flex justify-between">
                 <div>

@@ -1,47 +1,29 @@
 "use client";
 
-import React from "react";
-import { History, ShieldCheck, Lock } from "lucide-react";
+import React, { useState } from "react";
+import { History, ShieldCheck, Lock, Trash2 } from "lucide-react";
 
 export default function AuditPage() {
-  const logs = [
+  const [logs, setLogs] = useState([
     {
       id: "aud-1",
-      action: "ODONTOGRAM_UPDATED",
-      entity: "Odontogram #16",
+      action: "SYSTEM_INITIALIZED",
+      entity: "Plataforma Bee Dental",
       user: "Dra. Leticia Bueno",
-      details: "Registrada restauración resina compuesta pieza 16 (ocluso-mesial)",
-      time: "27/10/2026 10:15:32",
+      details: "Inicialización de base clínica, configuración de moneda DOP y agenda",
+      time: "28/10/2026 21:00:00",
       ip: "190.166.42.18",
     },
     {
       id: "aud-2",
-      action: "APPOINTMENT_CONFIRMED",
-      entity: "Cita #apt-4819",
-      user: "Lic. Ana Henríquez",
-      details: "Paciente confirmó asistencia vía canal WhatsApp",
-      time: "27/10/2026 09:40:11",
+      action: "WHATSAPP_CONFIGURED",
+      entity: "Evolution API (Docker)",
+      user: "Dra. Leticia Bueno",
+      details: "Configuración de contenedor 97f72e3ca98c en DigitalOcean puerto 8080",
+      time: "28/10/2026 21:15:00",
       ip: "190.166.42.18",
     },
-    {
-      id: "aud-3",
-      action: "INVOICE_CREATED",
-      entity: "Factura FAC-00412",
-      user: "Marcos Tavares",
-      details: "Emisión de factura por RD$ 65,000.00 a Laura Martínez",
-      time: "27/10/2026 09:20:05",
-      ip: "190.166.42.18",
-    },
-    {
-      id: "aud-4",
-      action: "PATIENT_CREATED",
-      entity: "Paciente EXP-0418",
-      user: "API Bot WhatsApp",
-      details: "Registro automático de paciente nuevo desde canal web",
-      time: "27/10/2026 08:45:00",
-      ip: "35.184.200.12",
-    },
-  ];
+  ]);
 
   return (
     <div className="space-y-6">
@@ -99,4 +81,3 @@ export default function AuditPage() {
     </div>
   );
 }
-

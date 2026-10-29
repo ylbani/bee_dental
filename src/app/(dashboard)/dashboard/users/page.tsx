@@ -13,11 +13,13 @@ interface StaffUser {
 
 export default function UsersPage() {
   const [staff, setStaff] = useState<StaffUser[]>([
-    { id: "u-1", name: "Dra. Leticia Bueno", email: "l.bueno@beedental.es", role: "Administradora / Directora Médica", status: "Activo" },
-    { id: "u-2", name: "Dra. Elena Ruiz", email: "e.ruiz@beedental.es", role: "Odontóloga Especialista", status: "Activo" },
-    { id: "u-3", name: "Dr. Carlos Morales", email: "c.morales@beedental.es", role: "Odontólogo Estética", status: "Activo" },
-    { id: "u-4", name: "Lic. Ana Henríquez", email: "recepcion@beedental.es", role: "Recepcionista y Agendamiento", status: "Activo" },
-    { id: "u-5", name: "Marcos Tavares", email: "caja@beedental.es", role: "Caja y Facturación", status: "Activo" },
+    {
+      id: "u-1",
+      name: "Dra. Leticia Bueno",
+      email: "l.bueno@beedental.es",
+      role: "Administradora / Directora Médica",
+      status: "Activo",
+    },
   ]);
 
   const [showInviteModal, setShowInviteModal] = useState(false);
@@ -57,10 +59,10 @@ export default function UsersPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="font-display text-2xl sm:text-3xl font-bold text-on-surface">
-            Usuarios, Roles y Permisos Clínicos
+            Equipo, Roles y Permisos Clínicos
           </h1>
           <p className="text-xs sm:text-sm text-on-surface-variant mt-0.5">
-            Control de acceso basado en roles (RBAC) para el equipo liderado por Dra. Leticia Bueno
+            Personal médico autorizado bajo la dirección de la Dra. Leticia Bueno
           </p>
         </div>
 
@@ -69,7 +71,7 @@ export default function UsersPage() {
           className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary text-white text-xs sm:text-sm font-bold rounded-xl shadow-md hover:bg-primary-container transition-all"
         >
           <Plus size={16} />
-          <span>Invitar Usuario</span>
+          <span>Invitar Colaborador</span>
         </button>
       </div>
 
@@ -90,7 +92,7 @@ export default function UsersPage() {
                 <tr key={u.id} className="hover:bg-surface-container-low/40">
                   <td className="py-3.5 px-4 font-bold text-on-surface flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center font-bold text-primary text-xs">
-                      {u.name.split(" ")[1]?.substring(0, 1) || "U"}
+                      LB
                     </div>
                     <span>{u.name}</span>
                   </td>
@@ -158,7 +160,6 @@ export default function UsersPage() {
                   <option value="Higienista / Asistente Dental">Higienista / Asistente Dental</option>
                   <option value="Recepcionista y Agendamiento">Recepcionista y Agendamiento</option>
                   <option value="Caja y Facturación">Caja y Facturación</option>
-                  <option value="Administrador Clínico">Administrador Clínico</option>
                 </select>
               </div>
               <div className="pt-2 flex justify-end gap-3">
@@ -186,7 +187,7 @@ export default function UsersPage() {
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-surface-container-lowest rounded-2xl border border-surface-container-high max-w-md w-full p-6 shadow-2xl space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-surface-container-high">
-              <h3 className="font-display font-bold text-lg text-on-surface">Editar Rol y Permisos</h3>
+              <h3 className="font-display font-bold text-lg text-on-surface">Editar Permisos</h3>
               <button onClick={() => setEditingUser(null)} className="text-on-surface-variant">✕</button>
             </div>
             <form onSubmit={handleSavePermissions} className="space-y-3">
@@ -203,20 +204,8 @@ export default function UsersPage() {
                 >
                   <option value="Administradora / Directora Médica">Administradora / Directora Médica</option>
                   <option value="Odontóloga Especialista">Odontóloga Especialista</option>
-                  <option value="Odontólogo Estética">Odontólogo Estética</option>
                   <option value="Recepcionista y Agendamiento">Recepcionista y Agendamiento</option>
                   <option value="Caja y Facturación">Caja y Facturación</option>
-                </select>
-              </div>
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-on-surface">Estado de Acceso</label>
-                <select
-                  value={editingUser.status}
-                  onChange={(e) => setEditingUser({ ...editingUser, status: e.target.value as any })}
-                  className="w-full h-10 px-3 bg-surface-container-low rounded-xl text-xs sm:text-sm border border-surface-container-high"
-                >
-                  <option value="Activo">Activo (Acceso habilitado)</option>
-                  <option value="Inactivo">Inactivo (Acceso suspendido)</option>
                 </select>
               </div>
               <div className="pt-2 flex justify-end gap-3">

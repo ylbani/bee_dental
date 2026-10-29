@@ -19,6 +19,7 @@ import {
   HeartPulse,
   UserCheck,
   CheckCircle,
+  Trash2,
 } from "lucide-react";
 
 export interface PatientItem {
@@ -42,93 +43,13 @@ export default function PatientsPage() {
   const [search, setSearch] = useState("");
   const [showNewModal, setShowNewModal] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState<PatientItem | null>(null);
-
-  const initialPatients: PatientItem[] = [
-    {
-      id: "p-1",
-      recordNumber: "EXP-0142",
-      name: "Laura Martínez Gómez",
-      idDocument: "402-2345678-1",
-      phone: "809-555-0192",
-      email: "laura.m@ejemplo.com",
-      lastVisit: "Hoy, 09:00",
-      balanceDop: 0,
-      status: "ACTIVO",
-      birthDate: "1994-05-12",
-      allergies: "Sin alergias conocidas a fármacos o anestésicos.",
-      medicalHistory: "Tratamiento activo de Ortodoncia Invisible con alineadores transparentes. Salud periodontal óptima.",
-      insuranceProvider: "ARS Senasa",
-    },
-    {
-      id: "p-2",
-      recordNumber: "EXP-0211",
-      name: "Carlos Henríquez Peña",
-      idDocument: "001-9876543-2",
-      phone: "829-444-1234",
-      email: "carlos.h@ejemplo.com",
-      lastVisit: "Hoy, 10:00",
-      balanceDop: 15000,
-      status: "ACTIVO",
-      birthDate: "1982-11-20",
-      allergies: "Alergia confirmada a la Penicilina (usar Clindamicina o Azitromicina).",
-      medicalHistory: "Implante oseointegrado en pieza 36. Cirugía guiada 3D.",
-      insuranceProvider: "Primera ARS de Humano",
-    },
-    {
-      id: "p-3",
-      recordNumber: "EXP-0089",
-      name: "Lucía Gómez Rosario",
-      idDocument: "402-1122334-5",
-      phone: "849-888-9900",
-      email: "lucia.g@ejemplo.com",
-      lastVisit: "Hoy, 11:30",
-      balanceDop: 0,
-      status: "ACTIVO",
-      birthDate: "1990-03-18",
-      allergies: "Ninguna reportada.",
-      medicalHistory: "Carillas cerámicas E-Max en sector anterior (piezas 13 a 23). Diseño Digital de Sonrisa.",
-      insuranceProvider: "Privado (Sin seguro)",
-    },
-    {
-      id: "p-4",
-      recordNumber: "EXP-0305",
-      name: "Ramón Valdez Cruz",
-      idDocument: "001-5566778-9",
-      phone: "809-777-3322",
-      email: "ramon.v@ejemplo.com",
-      lastVisit: "15 Octubre 2026",
-      balanceDop: 3500,
-      status: "ACTIVO",
-      birthDate: "1975-08-30",
-      allergies: "Ninguna.",
-      medicalHistory: "Profilaxis y remoción ultrasónica periódica cada 6 meses.",
-      insuranceProvider: "Mapfre Salud ARS",
-    },
-    {
-      id: "p-5",
-      recordNumber: "EXP-0418",
-      name: "Patricia Santana Morales",
-      idDocument: "402-9988776-3",
-      phone: "849-632-3258",
-      email: "patricia.s@ejemplo.com",
-      lastVisit: "Primera Visita",
-      balanceDop: 0,
-      status: "ACTIVO",
-      birthDate: "1998-09-04",
-      allergies: "Sensibilidad dental leve a estímulos fríos.",
-      medicalHistory: "Evaluación inicial solicitada por canal WhatsApp para blanqueamiento dental.",
-      insuranceProvider: "ARS Monumental",
-    },
-  ];
-
-  const [patients, setPatients] = useState<PatientItem[]>(initialPatients);
+  const [patients, setPatients] = useState<PatientItem[]>([]);
 
   useEffect(() => {
     try {
       const stored = localStorage.getItem("bee_custom_patients");
       if (stored) {
-        const parsed: PatientItem[] = JSON.parse(stored);
-        setPatients([...parsed, ...initialPatients]);
+        setPatients(JSON.parse(stored));
       }
     } catch (e) {
       console.error(e);
@@ -156,7 +77,7 @@ export default function PatientsPage() {
       idDocument: newPatient.idDocument || "Pendiente",
       phone: newPatient.phone,
       email: newPatient.email || "No registrada",
-      lastVisit: "Sin consultas",
+      lastVisit: "Primera Visita",
       balanceDop: 0,
       status: "ACTIVO",
       allergies: newPatient.allergies || "Sin alergias conocidas.",
@@ -168,8 +89,7 @@ export default function PatientsPage() {
     setPatients(updated);
 
     try {
-      const stored = JSON.parse(localStorage.getItem("bee_custom_patients") || "[]");
-      localStorage.setItem("bee_custom_patients", JSON.stringify([created, ...stored]));
+      localStorage.setItem("bee_custom_patients", JSON.stringify(updated));
     } catch (err) {
       console.error(err);
     }
@@ -186,6 +106,17 @@ export default function PatientsPage() {
       medicalHistory: "",
       insuranceProvider: "Privado (Sin seguro)",
     });
+  };
+
+  const handleClearAllPatients = () => {
+    if (confirm("¿Estás seguro de que deseas vaciar todos los pacientes y datos de prueba?")) {
+      setPatients([]);
+      try {
+        localStorage.removeItem("bee_custom_patients");
+      } catch (e) {
+        console.error(e);
+      }
+    }
   };
 
   const filtered = patients.filter(
@@ -210,6 +141,17 @@ export default function PatientsPage() {
         </div>
 
         <div className="flex items-center gap-2">
+          {patients.length > 0 && (
+            <button
+              onClick={handleClearAllPatients}
+              className="px-3 py-2 rounded-xl border border-surface-container-high text-xs font-bold text-rose-700 hover:bg-rose-50 transition-colors flex items-center gap-1.5"
+              title="Limpiar pacientes de prueba"
+            >
+              <Trash2 size={14} />
+              <span>Limpiar Datos</span>
+            </button>
+          )}
+
           <Link
             href="/dashboard/patients/new"
             className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary text-white text-xs sm:text-sm font-bold rounded-xl shadow-md hover:bg-primary-container transition-all"
@@ -242,64 +184,84 @@ export default function PatientsPage() {
 
       {/* Patients Table */}
       <div className="bg-surface-container-lowest rounded-2xl border border-surface-container-high/80 overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs sm:text-sm">
-            <thead>
-              <tr className="border-b border-surface-container-high bg-surface-container-low/50 text-on-surface-variant font-bold text-xs">
-                <th className="py-3 px-4">Expediente</th>
-                <th className="py-3 px-4">Paciente</th>
-                <th className="py-3 px-4">Documento / Cédula</th>
-                <th className="py-3 px-4">Teléfono &amp; Correo</th>
-                <th className="py-3 px-4">Última Visita</th>
-                <th className="py-3 px-4">Saldo Pendiente</th>
-                <th className="py-3 px-4 text-right">Acciones</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-surface-container-low">
-              {filtered.map((pt) => (
-                <tr key={pt.id} className="hover:bg-surface-container-low/40 transition-colors">
-                  <td className="py-3 px-4 font-bold text-primary">{pt.recordNumber}</td>
-                  <td className="py-3 px-4 font-bold text-on-surface">{pt.name}</td>
-                  <td className="py-3 px-4 text-on-surface-variant">{pt.idDocument}</td>
-                  <td className="py-3 px-4 text-on-surface-variant">
-                    <div className="flex flex-col">
-                      <span>{pt.phone}</span>
-                      <span className="text-[11px] text-on-surface-variant/70">{pt.email}</span>
-                    </div>
-                  </td>
-                  <td className="py-3 px-4 text-on-surface-variant">{pt.lastVisit}</td>
-                  <td className="py-3 px-4">
-                    {pt.balanceDop > 0 ? (
-                      <span className="text-amber-800 font-bold bg-amber-50 px-2 py-0.5 rounded">
-                        RD$ {pt.balanceDop.toLocaleString("es-DO", { minimumFractionDigits: 2 })}
-                      </span>
-                    ) : (
-                      <span className="text-emerald-700 font-semibold">Al día</span>
-                    )}
-                  </td>
-                  <td className="py-3 px-4 text-right">
-                    <div className="flex items-center justify-end gap-1.5">
-                      <button
-                        onClick={() => setSelectedPatient(pt)}
-                        className="px-3 py-1.5 rounded-lg bg-surface-container text-primary font-bold text-xs hover:bg-primary hover:text-white transition-colors"
-                        title="Ver Ficha Clínica Completa"
-                      >
-                        Ver Ficha
-                      </button>
-                    </div>
-                  </td>
+        {filtered.length === 0 ? (
+          <div className="p-12 text-center space-y-4">
+            <div className="w-16 h-16 rounded-full bg-primary-fixed/30 text-primary flex items-center justify-center mx-auto">
+              <Users size={32} />
+            </div>
+            <div>
+              <h3 className="font-display font-bold text-base text-on-surface">Base de Pacientes Limpia</h3>
+              <p className="text-xs text-on-surface-variant max-w-md mx-auto mt-1">
+                No hay pacientes de prueba registrados. Registra tu primer paciente real para aperturar su expediente clínico.
+              </p>
+            </div>
+            <Link
+              href="/dashboard/patients/new"
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-primary text-white text-xs font-bold rounded-xl shadow-md hover:bg-primary-container"
+            >
+              <Plus size={16} />
+              <span>Crear Primer Expediente</span>
+            </Link>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs sm:text-sm">
+              <thead>
+                <tr className="border-b border-surface-container-high bg-surface-container-low/50 text-on-surface-variant font-bold text-xs">
+                  <th className="py-3 px-4">Expediente</th>
+                  <th className="py-3 px-4">Paciente</th>
+                  <th className="py-3 px-4">Documento / Cédula</th>
+                  <th className="py-3 px-4">Teléfono &amp; Correo</th>
+                  <th className="py-3 px-4">Última Visita</th>
+                  <th className="py-3 px-4">Saldo Pendiente</th>
+                  <th className="py-3 px-4 text-right">Acciones</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-surface-container-low">
+                {filtered.map((pt) => (
+                  <tr key={pt.id} className="hover:bg-surface-container-low/40 transition-colors">
+                    <td className="py-3 px-4 font-bold text-primary">{pt.recordNumber}</td>
+                    <td className="py-3 px-4 font-bold text-on-surface">{pt.name}</td>
+                    <td className="py-3 px-4 text-on-surface-variant">{pt.idDocument}</td>
+                    <td className="py-3 px-4 text-on-surface-variant">
+                      <div className="flex flex-col">
+                        <span>{pt.phone}</span>
+                        <span className="text-[11px] text-on-surface-variant/70">{pt.email}</span>
+                      </div>
+                    </td>
+                    <td className="py-3 px-4 text-on-surface-variant">{pt.lastVisit}</td>
+                    <td className="py-3 px-4">
+                      {pt.balanceDop > 0 ? (
+                        <span className="text-amber-800 font-bold bg-amber-50 px-2 py-0.5 rounded">
+                          RD$ {pt.balanceDop.toLocaleString("es-DO", { minimumFractionDigits: 2 })}
+                        </span>
+                      ) : (
+                        <span className="text-emerald-700 font-semibold">Al día</span>
+                      )}
+                    </td>
+                    <td className="py-3 px-4 text-right">
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          onClick={() => setSelectedPatient(pt)}
+                          className="px-3 py-1.5 rounded-lg bg-surface-container text-primary font-bold text-xs hover:bg-primary hover:text-white transition-colors"
+                          title="Ver Ficha Clínica Completa"
+                        >
+                          Ver Ficha
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {/* Patient Detail Ficha Modal */}
       {selectedPatient && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-surface-container-lowest rounded-3xl border border-surface-container-high max-w-2xl w-full p-6 shadow-2xl space-y-6 animate-in fade-in zoom-in-95 max-h-[90vh] overflow-y-auto">
-            {/* Header */}
             <div className="flex items-start justify-between pb-4 border-b border-surface-container-high">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-2xl bg-primary-fixed flex items-center justify-center text-primary font-bold text-lg">
@@ -398,15 +360,6 @@ export default function PatientsPage() {
               </div>
 
               <div className="flex items-center gap-2">
-                {selectedPatient.balanceDop > 0 && (
-                  <Link
-                    href="/dashboard/billing/new"
-                    className="inline-flex items-center gap-1.5 px-3 py-2 bg-amber-100 text-amber-900 text-xs font-bold rounded-xl hover:bg-amber-200 transition-colors"
-                  >
-                    <CreditCard size={15} />
-                    <span>Cobrar Saldo</span>
-                  </Link>
-                )}
                 <button
                   onClick={() => setSelectedPatient(null)}
                   className="px-4 py-2 rounded-xl bg-surface-container text-xs font-bold text-on-surface-variant hover:bg-surface-container-high transition-colors"
@@ -415,100 +368,6 @@ export default function PatientsPage() {
                 </button>
               </div>
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* New Patient Quick Modal */}
-      {showNewModal && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-surface-container-lowest rounded-2xl border border-surface-container-high max-w-lg w-full p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in-95">
-            <div className="flex items-center justify-between pb-3 border-b border-surface-container-high">
-              <h3 className="font-display font-bold text-lg text-on-surface">
-                Registrar Nuevo Paciente
-              </h3>
-              <button onClick={() => setShowNewModal(false)} className="text-on-surface-variant hover:text-on-surface">
-                ✕
-              </button>
-            </div>
-
-            <form onSubmit={handleCreatePatient} className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-on-surface">Nombres *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Ej. María"
-                    value={newPatient.firstName}
-                    onChange={(e) => setNewPatient({ ...newPatient, firstName: e.target.value })}
-                    className="w-full h-10 px-3 bg-surface-container-low rounded-xl text-xs sm:text-sm border border-surface-container-high focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-on-surface">Apellidos *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Ej. Santos"
-                    value={newPatient.lastName}
-                    onChange={(e) => setNewPatient({ ...newPatient, lastName: e.target.value })}
-                    className="w-full h-10 px-3 bg-surface-container-low rounded-xl text-xs sm:text-sm border border-surface-container-high focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-on-surface">DNI / Cédula</label>
-                  <input
-                    type="text"
-                    placeholder="402-XXXXXXX-X"
-                    value={newPatient.idDocument}
-                    onChange={(e) => setNewPatient({ ...newPatient, idDocument: e.target.value })}
-                    className="w-full h-10 px-3 bg-surface-container-low rounded-xl text-xs sm:text-sm border border-surface-container-high focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-on-surface">Teléfono *</label>
-                  <input
-                    type="tel"
-                    required
-                    placeholder="809-555-0199"
-                    value={newPatient.phone}
-                    onChange={(e) => setNewPatient({ ...newPatient, phone: e.target.value })}
-                    className="w-full h-10 px-3 bg-surface-container-low rounded-xl text-xs sm:text-sm border border-surface-container-high focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-on-surface">Correo Electrónico</label>
-                <input
-                  type="email"
-                  placeholder="paciente@ejemplo.com"
-                  value={newPatient.email}
-                  onChange={(e) => setNewPatient({ ...newPatient, email: e.target.value })}
-                  className="w-full h-10 px-3 bg-surface-container-low rounded-xl text-xs sm:text-sm border border-surface-container-high focus:outline-none focus:ring-2 focus:ring-primary"
-                />
-              </div>
-
-              <div className="pt-2 flex items-center justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => setShowNewModal(false)}
-                  className="px-4 py-2 rounded-xl border border-surface-container-high text-xs font-bold text-on-surface-variant hover:bg-surface-container"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 bg-primary text-white text-xs font-bold rounded-xl shadow-md hover:bg-primary-container"
-                >
-                  Guardar Paciente
-                </button>
-              </div>
-            </form>
           </div>
         </div>
       )}
