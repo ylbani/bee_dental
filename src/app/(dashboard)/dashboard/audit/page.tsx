@@ -9,7 +9,7 @@ export default function AuditPage() {
       id: "aud-1",
       action: "ODONTOGRAM_UPDATED",
       entity: "Odontogram #16",
-      user: "Dr. Michael Chen",
+      user: "Dra. Leticia Bueno",
       details: "Registrada restauración resina compuesta pieza 16 (ocluso-mesial)",
       time: "27/10/2026 10:15:32",
       ip: "190.166.42.18",

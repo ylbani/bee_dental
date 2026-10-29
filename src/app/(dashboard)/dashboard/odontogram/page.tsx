@@ -1,5 +1,5 @@
 import React from "react";
-import { InteractiveOdontogram } from "../../../components/odontogram/interactive-odontogram";
+import { InteractiveOdontogram } from "@/components/odontogram/interactive-odontogram";
 
 export default function OdontogramPage() {
   return (

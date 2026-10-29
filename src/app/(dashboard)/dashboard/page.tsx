@@ -20,26 +20,55 @@ import {
 export default function DashboardPage() {
   const [period, setPeriod] = useState<"today" | "week" | "month">("today");
 
-  // Real clinical metrics
-  const stats = {
-    todayAppointments: 14,
-    attendedPatients: 8,
-    waitingPatients: 2,
-    upcomingPatients: 4,
-    cancelledToday: 1,
-    occupancyRate: "88%",
-    todayRevenue: "RD$ 48,500.00",
-    monthRevenue: "RD$ 642,800.00",
-    pendingInvoices: "RD$ 32,400.00",
+  // Dynamic clinical metrics based on period
+  const statsMap = {
+    today: {
+      todayAppointments: 14,
+      attendedPatients: 8,
+      waitingPatients: 2,
+      upcomingPatients: 4,
+      cancelledToday: 1,
+      occupancyRate: "88%",
+      todayRevenue: "RD$ 48,500.00",
+      monthRevenue: "RD$ 642,800.00",
+      pendingInvoices: "RD$ 32,400.00",
+      newPatients: 3,
+    },
+    week: {
+      todayAppointments: 68,
+      attendedPatients: 52,
+      waitingPatients: 2,
+      upcomingPatients: 14,
+      cancelledToday: 4,
+      occupancyRate: "92%",
+      todayRevenue: "RD$ 215,000.00",
+      monthRevenue: "RD$ 642,800.00",
+      pendingInvoices: "RD$ 54,000.00",
+      newPatients: 12,
+    },
+    month: {
+      todayAppointments: 240,
+      attendedPatients: 218,
+      waitingPatients: 0,
+      upcomingPatients: 22,
+      cancelledToday: 11,
+      occupancyRate: "94%",
+      todayRevenue: "RD$ 642,800.00",
+      monthRevenue: "RD$ 642,800.00",
+      pendingInvoices: "RD$ 68,000.00",
+      newPatients: 48,
+    },
   };
 
-  const todayAppointmentsList = [
+  const stats = statsMap[period];
+
+  const [appointmentsList, setAppointmentsList] = useState([
     {
       id: "apt-1",
       patient: "Laura Martínez",
       record: "EXP-0142",
       service: "Ortodoncia Invisible (Control)",
-      professional: "Dra. Elena Ruiz",
+      professional: "Dra. Leticia Bueno",
       time: "09:00 - 09:30",
       status: "COMPLETED",
       statusText: "Completada",
@@ -50,7 +79,7 @@ export default function DashboardPage() {
       patient: "Carlos Henríquez",
       record: "EXP-0211",
       service: "Implantología Guiada (Cirugía)",
-      professional: "Dr. Michael Chen",
+      professional: "Dra. Leticia Bueno",
       time: "10:00 - 11:30",
       status: "IN_PROGRESS",
       statusText: "En Atención (Sillón 1)",
@@ -61,7 +90,7 @@ export default function DashboardPage() {
       patient: "Lucía Gómez",
       record: "EXP-0089",
       service: "Diseño Digital de Sonrisa (DSD)",
-      professional: "Dr. Carlos Morales",
+      professional: "Dra. Leticia Bueno",
       time: "11:30 - 12:15",
       status: "ARRIVED",
       statusText: "En Recepción",
@@ -72,7 +101,7 @@ export default function DashboardPage() {
       patient: "Ramón Valdez",
       record: "EXP-0305",
       service: "Limpieza & Profilaxis Ultrasónica",
-      professional: "Dra. Elena Ruiz",
+      professional: "Dra. Leticia Bueno",
       time: "15:00 - 15:45",
       status: "CONFIRMED",
       statusText: "Confirmada",
@@ -83,13 +112,22 @@ export default function DashboardPage() {
       patient: "Patricia Santana",
       record: "EXP-0418",
       service: "Valoración Diagnóstico 3D (Web)",
-      professional: "Dr. Michael Chen",
+      professional: "Dra. Leticia Bueno",
       time: "16:30 - 17:00",
       status: "PENDING",
       statusText: "Pendiente WhatsApp",
       badgeColor: "bg-gray-100 text-gray-800",
     },
-  ];
+  ]);
+
+  const [selectedApt, setSelectedApt] = useState<any | null>(null);
+
+  const handleUpdateStatus = (id: string, newStatus: string, newStatusText: string, newBadge: string) => {
+    setAppointmentsList((prev) =>
+      prev.map((a) => (a.id === id ? { ...a, status: newStatus, statusText: newStatusText, badgeColor: newBadge } : a))
+    );
+    setSelectedApt(null);
+  };
 
   return (
     <div className="space-y-6">
@@ -100,7 +138,7 @@ export default function DashboardPage() {
             Panel Clínico Principal
           </h1>
           <p className="text-xs sm:text-sm text-on-surface-variant mt-0.5">
-            Bienvenido, Dr. Michael Chen • Sede Plaza Balón, Santo Domingo
+            Bienvenido, Dra. Leticia Bueno • Directora Médica &amp; Especialista Dental
           </p>
         </div>
 
@@ -261,8 +299,12 @@ export default function DashboardPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-surface-container-low font-medium">
-                {todayAppointmentsList.map((apt) => (
-                  <tr key={apt.id} className="hover:bg-surface-container-low/50 transition-colors">
+                {appointmentsList.map((apt) => (
+                  <tr
+                    key={apt.id}
+                    onClick={() => setSelectedApt(apt)}
+                    className="hover:bg-surface-container-low/80 cursor-pointer transition-colors"
+                  >
                     <td className="py-3.5 pr-2">
                       <div className="flex flex-col">
                         <span className="font-bold text-on-surface">{apt.patient}</span>
@@ -358,6 +400,100 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Appointment Status Modal */}
+      {selectedApt && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-surface-container-lowest rounded-2xl border border-surface-container-high max-w-md w-full p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-surface-container-high">
+              <div>
+                <h3 className="font-display font-bold text-lg text-on-surface">Gestión de Turno Clínico</h3>
+                <p className="text-xs text-on-surface-variant">{selectedApt.patient} • {selectedApt.record}</p>
+              </div>
+              <button
+                onClick={() => setSelectedApt(null)}
+                className="w-8 h-8 rounded-lg bg-surface-container-low hover:bg-surface-container flex items-center justify-center text-on-surface-variant"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-2 text-xs bg-surface-container-low p-3.5 rounded-xl">
+              <p><strong>Servicio:</strong> {selectedApt.service}</p>
+              <p><strong>Especialista:</strong> {selectedApt.professional}</p>
+              <p><strong>Horario:</strong> {selectedApt.time}</p>
+              <p><strong>Estado Actual:</strong> <span className="font-bold">{selectedApt.statusText}</span></p>
+            </div>
+
+            <div className="space-y-2 pt-2">
+              <p className="text-xs font-bold text-on-surface">Cambiar Estado de Atención:</p>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() =>
+                    handleUpdateStatus(
+                      selectedApt.id,
+                      "ARRIVED",
+                      "En Recepción",
+                      "bg-amber-100 text-amber-800"
+                    )
+                  }
+                  className="p-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 text-xs font-bold transition-colors"
+                >
+                  🟡 En Recepción
+                </button>
+                <button
+                  onClick={() =>
+                    handleUpdateStatus(
+                      selectedApt.id,
+                      "IN_PROGRESS",
+                      "En Atención",
+                      "bg-blue-100 text-blue-800 animate-pulse"
+                    )
+                  }
+                  className="p-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-900 text-xs font-bold transition-colors"
+                >
+                  🔵 En Sillón
+                </button>
+                <button
+                  onClick={() =>
+                    handleUpdateStatus(
+                      selectedApt.id,
+                      "COMPLETED",
+                      "Completada",
+                      "bg-emerald-100 text-emerald-800"
+                    )
+                  }
+                  className="p-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-900 text-xs font-bold transition-colors"
+                >
+                  🟢 Completada
+                </button>
+                <button
+                  onClick={() =>
+                    handleUpdateStatus(
+                      selectedApt.id,
+                      "CANCELLED",
+                      "Cancelada",
+                      "bg-rose-100 text-rose-800"
+                    )
+                  }
+                  className="p-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-900 text-xs font-bold transition-colors"
+                >
+                  🔴 Cancelada
+                </button>
+              </div>
+            </div>
+
+            <div className="pt-2 flex justify-end">
+              <button
+                onClick={() => setSelectedApt(null)}
+                className="px-4 py-2 rounded-xl bg-surface-container text-xs font-bold text-on-surface-variant hover:bg-surface-container-high transition-colors"
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

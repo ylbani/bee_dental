@@ -2,15 +2,24 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Search, Bell, Plus, Calendar, UserPlus, ExternalLink } from "lucide-react";
 
 export function Topbar() {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/dashboard/patients`);
+    }
+  };
 
   return (
     <header className="h-16 border-b border-surface-container-high bg-surface-container-lowest flex items-center justify-between px-6 z-20">
       {/* Search Bar */}
-      <div className="flex items-center gap-3 w-full max-w-md">
+      <form onSubmit={handleSearchSubmit} className="flex items-center gap-3 w-full max-w-md">
         <div className="relative w-full">
           <Search
             size={18}
@@ -24,7 +33,7 @@ export function Topbar() {
             className="w-full h-10 pl-10 pr-4 bg-surface-container-low rounded-xl text-xs sm:text-sm text-on-surface placeholder:text-on-surface-variant/60 border border-transparent focus:border-primary focus:bg-surface-container-lowest focus:outline-none transition-all"
           />
         </div>
-      </div>
+      </form>
 
       {/* Right Actions & Status */}
       <div className="flex items-center gap-4">
