@@ -7,7 +7,7 @@ import { Lock, Mail, ArrowRight } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("m.chen@beedental.es");
+  const [email, setEmail] = useState("l.bueno@beedental.es");
   const [password, setPassword] = useState("••••••••");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -18,11 +18,10 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-surface flex flex-col justify-center items-center p-4">
       <div className="w-full max-w-md bg-surface-container-lowest p-8 rounded-3xl border border-surface-container-high/80 shadow-xl space-y-6">
-        <div className="text-center space-y-2">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-primary to-primary-container flex items-center justify-center text-white mx-auto shadow-md">
-            <span className="material-symbols-outlined text-[28px]">dentistry</span>
-          </div>
-          <h1 className="font-display text-2xl font-bold text-on-surface">Bee Dental</h1>
+        <div className="text-center space-y-3 flex flex-col items-center">
+          <Link href="/">
+            <img src="/logo.png" alt="Bee Dental" className="h-14 w-auto object-contain mx-auto" />
+          </Link>
           <p className="text-xs text-on-surface-variant">Acceso al Sistema Clínico &amp; Administrativo</p>
         </div>
 

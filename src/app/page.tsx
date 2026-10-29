@@ -120,23 +120,8 @@ export default function HomePage() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="h-16 sm:h-20 flex items-center justify-between gap-4">
-            <a className="flex items-center gap-3 group" href="#inicio">
-              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-tr from-primary to-primary-container flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform">
-                <span className="material-symbols-outlined text-[24px]">dentistry</span>
-              </div>
-              <div className="flex flex-col">
-                <div className="flex items-center gap-1.5">
-                  <span className="font-display text-xl sm:text-2xl font-bold text-on-surface tracking-tight group-hover:text-primary transition-colors">
-                    Bee Dental
-                  </span>
-                  <span className="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-bold rounded bg-primary-fixed text-on-primary-fixed uppercase tracking-wider">
-                    Santo Domingo
-                  </span>
-                </div>
-                <span className="text-[11px] font-semibold text-primary tracking-wider uppercase">
-                  Perfilando tu sonrisa
-                </span>
-              </div>
+            <a className="flex items-center group py-1" href="#inicio" aria-label="Bee Dental Inicio">
+              <img src="/logo.png" alt="Bee Dental - Perfilando tu sonrisa" className="h-10 sm:h-12 md:h-14 w-auto object-contain transition-transform group-hover:scale-105" />
             </a>
 
             <nav className="hidden xl:flex items-center gap-7 text-sm font-semibold text-on-surface-variant">
@@ -280,6 +265,53 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* ================= MEDICAL ACCREDITATIONS & PILLARS ================= */}
+        <section className="w-full bg-surface-container-low py-6 border-y border-surface-container-high/60 shadow-sm">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6 items-center">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-primary shrink-0">
+                  <span className="material-symbols-outlined text-[22px]">precision_manufacturing</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs sm:text-sm font-bold text-on-surface leading-tight">CAD / CAM 3D</span>
+                  <span className="text-[11px] sm:text-xs text-on-surface-variant">Prótesis Instantánea</span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center text-secondary shrink-0">
+                  <span className="material-symbols-outlined text-[22px]">medical_information</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs sm:text-sm font-bold text-on-surface leading-tight">Colegiados Oficiales</span>
+                  <span className="text-[11px] sm:text-xs text-on-surface-variant">Consejo Odontológico</span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-tertiary-fixed flex items-center justify-center text-tertiary shrink-0">
+                  <span className="material-symbols-outlined text-[22px]">contract_edit</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs sm:text-sm font-bold text-on-surface leading-tight">Garantía Escrita</span>
+                  <span className="text-[11px] sm:text-xs text-on-surface-variant">Protección Integral</span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-primary-fixed-dim flex items-center justify-center text-primary-container shrink-0">
+                  <span className="material-symbols-outlined text-[22px]">payments</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs sm:text-sm font-bold text-on-surface leading-tight">0% Intereses</span>
+                  <span className="text-[11px] sm:text-xs text-on-surface-variant">Hasta 24 Meses</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* ================= SERVICES SECTION ================= */}
         <section className="w-full py-16 sm:py-20 bg-surface" id="tratamientos">
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -337,6 +369,40 @@ export default function HomePage() {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ================= MEDICAL TEAM SECTION ================= */}
+        <section className="w-full py-16 sm:py-20 bg-surface-container-low" id="equipo">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
+            <div className="text-center max-w-2xl mx-auto mb-12 flex flex-col gap-2">
+              <span className="text-xs sm:text-sm text-primary font-bold uppercase tracking-wider">Dirección Médica &amp; Especialista</span>
+              <h2 className="font-display text-3xl sm:text-4xl font-bold text-on-surface">Compromiso y excelencia con tu salud</h2>
+              <p className="text-sm sm:text-base text-on-surface-variant">
+                Atención personalizada de vanguardia con diagnóstico digital 3D y el trato humano y cercano que mereces.
+              </p>
+            </div>
+
+            <div className="max-w-md mx-auto">
+              <div className="bg-surface-container-lowest p-8 sm:p-10 rounded-3xl shadow-lg hover:shadow-xl transition-all border border-surface-container-high/60 flex flex-col items-center text-center">
+                <div className="w-36 h-36 rounded-full overflow-hidden mb-6 shadow-md ring-4 ring-primary-fixed">
+                  <img
+                    alt="Dra. Leticia Bueno - Especialista en Odontología Integral"
+                    className="w-full h-full object-cover"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRXeiMWL1EdSgjYo9SoO_2Q7zagwo37RN9eOz6k50E2l-h3CpBh4xy4Pz02306pbRQVGJQ--clsv-ibOfu4-DtMmVbY4-z25sKKXXGkqMPzqfQVAKKfhjc2wmn0a6q3LDHVSMmcbycXQ8OYbjQckUy7kAJM08jCMU-vX56T2ZxwDEyHsI_iyihtq_QJ_6lVsLrHC_XVyG-plr_5_OapORV2VoaI-6E5Z23LKO8Jv0"
+                  />
+                </div>
+                <span className="font-display text-2xl sm:text-3xl font-bold text-on-surface">Dra. Leticia Bueno</span>
+                <span className="text-xs sm:text-sm text-primary font-bold mt-1.5 uppercase tracking-wide">Directora Médica &amp; Odontología Integral</span>
+                <p className="text-xs sm:text-sm text-on-surface-variant mt-3.5 leading-relaxed">
+                  Especialista en Ortodoncia Invisible, Diseño de Sonrisa Digital (DSD) y Odontología Restauradora Avanzada. Comprometida con la máxima precisión clínica y el bienestar de cada paciente.
+                </p>
+                <div className="mt-6 pt-4 w-full border-t border-surface-container flex items-center justify-center gap-2 text-on-surface-variant text-xs sm:text-sm font-semibold">
+                  <span className="material-symbols-outlined text-[18px] text-primary">verified</span>
+                  <span>+1,200 sonrisas transformadas con éxito</span>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -594,15 +660,9 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-14 lg:py-16">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-surface-container-high">
             <div className="flex flex-col gap-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-primary-container flex items-center justify-center text-white">
-                  <span className="material-symbols-outlined text-[22px]">dentistry</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-display text-xl font-bold leading-tight text-on-surface">Bee Dental</span>
-                  <span className="text-[11px] font-semibold text-primary tracking-wider uppercase">Perfilando tu sonrisa</span>
-                </div>
-              </div>
+              <a className="flex items-center group w-fit" href="#inicio" aria-label="Bee Dental Inicio">
+                <img src="/logo.png" alt="Bee Dental - Perfilando tu sonrisa" className="h-11 sm:h-13 w-auto object-contain transition-transform group-hover:scale-105" />
+              </a>
               <p className="text-xs sm:text-sm text-on-surface-variant leading-relaxed">
                 Excelencia odontológica y diseño estético en armonía con tu salud bucal. Tecnología diagnóstica 3D, sedación consciente y profesionales colegiados.
               </p>

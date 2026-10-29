@@ -53,20 +53,8 @@ export function Sidebar({ userRole = "ADMIN" }: SidebarProps) {
     >
       {/* Brand Header */}
       <div className="h-16 flex items-center justify-between px-4 border-b border-surface-container-high">
-        <Link href="/dashboard" className="flex items-center gap-3 overflow-hidden">
-          <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-white shrink-0 shadow-sm">
-            <span className="material-symbols-outlined text-[20px]">dentistry</span>
-          </div>
-          {!collapsed && (
-            <div className="flex flex-col">
-              <span className="font-display font-bold text-base text-on-surface leading-tight tracking-tight">
-                Bee Dental
-              </span>
-              <span className="text-[10px] uppercase font-bold text-primary tracking-wider">
-                Gestión Clínica
-              </span>
-            </div>
-          )}
+        <Link href="/dashboard" className="flex items-center gap-2 overflow-hidden">
+          <img src="/logo.png" alt="Bee Dental" className="h-9 w-auto object-contain" />
         </Link>
         <button
           onClick={() => setCollapsed(!collapsed)}
@@ -109,15 +97,15 @@ export function Sidebar({ userRole = "ADMIN" }: SidebarProps) {
       <div className="p-3 border-t border-surface-container-high bg-surface-container-low/50">
         <div className="flex items-center gap-3 overflow-hidden">
           <div className="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-primary font-bold text-xs shrink-0 ring-2 ring-primary">
-            MC
+            LB
           </div>
           {!collapsed && (
             <div className="flex flex-col min-w-0 flex-1">
               <span className="text-xs font-bold text-on-surface truncate">
-                Dr. Michael Chen
+                Dra. Leticia Bueno
               </span>
               <span className="text-[10px] text-primary font-semibold truncate">
-                Director Médico (Admin)
+                Directora Médica
               </span>
             </div>
           )}
