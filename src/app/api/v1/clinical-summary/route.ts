@@ -77,3 +77,4 @@ Por favor, estructura tu respuesta en 3 secciones claras:
     }, { status: 500 });
   }
 }
+

@@ -190,69 +190,110 @@ export function InteractiveOdontogram() {
       </div>
 
       {/* SVG Odontogram Arches */}
-      <div className="flex flex-col items-center justify-center p-4 bg-surface-container-low/30 rounded-2xl border border-surface-container-high/40 overflow-x-auto">
+      <div className="flex flex-col items-center justify-center p-4 sm:p-6 bg-surface-container-low/30 rounded-2xl border border-surface-container-high/40 overflow-x-auto space-y-6">
+        {/* Anatomical Orientation Guide */}
+        <div className="w-full max-w-4xl flex items-center justify-between text-[11px] font-bold text-on-surface-variant uppercase tracking-wider px-2 border-b border-surface-container-high/60 pb-2">
+          <span className="flex items-center gap-1 text-emerald-700">
+            <span>◀ DERECHA DEL PACIENTE</span>
+            <span className="text-[10px] lowercase text-on-surface-variant">(Lado vestibular derecho)</span>
+          </span>
+          <span className="text-primary font-mono bg-primary-fixed/40 px-2.5 py-0.5 rounded-full text-[10px]">
+            LÍNEA MEDIA INTERINCISIVA
+          </span>
+          <span className="flex items-center gap-1 text-blue-700">
+            <span className="text-[10px] lowercase text-on-surface-variant">(Lado vestibular izquierdo)</span>
+            <span>IZQUIERDA DEL PACIENTE ▶</span>
+          </span>
+        </div>
+
         {/* Upper Arch (Maxilar Superior) */}
-        <div className="text-center w-full max-w-4xl mb-6">
+        <div className="text-center w-full max-w-4xl">
           <span className="text-xs font-bold uppercase tracking-wider text-primary block mb-3">
             Arcada Superior (Maxilar)
           </span>
-          <div className="flex items-center justify-center gap-1 sm:gap-2">
-            {/* Upper Right Quadrant */}
-            <div className="flex gap-1 sm:gap-2">
-              {activeTeeth.upperRight.map((tooth) => (
-                <ToothSVG
-                  key={tooth}
-                  toothNumber={tooth}
-                  findings={getToothConditions(tooth)}
-                  onClick={() => handleOpenToothModal(tooth)}
-                />
-              ))}
+
+          <div className="flex items-start justify-center gap-2 sm:gap-4">
+            {/* 1st Quadrant (Upper Right) */}
+            <div className="flex flex-col items-center">
+              <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-md mb-2 border border-emerald-200">
+                {dentitionType === "permanent" ? "1er Cuadrante (18 al 11)" : "5to Cuadrante (55 al 51)"}
+              </span>
+              <div className="flex gap-1 sm:gap-2">
+                {activeTeeth.upperRight.map((tooth) => (
+                  <ToothSVG
+                    key={tooth}
+                    toothNumber={tooth}
+                    findings={getToothConditions(tooth)}
+                    onClick={() => handleOpenToothModal(tooth)}
+                  />
+                ))}
+              </div>
             </div>
+
             {/* Midline divider */}
-            <div className="w-0.5 h-20 bg-primary/40 mx-1 sm:mx-2 rounded-full" />
-            {/* Upper Left Quadrant */}
-            <div className="flex gap-1 sm:gap-2">
-              {activeTeeth.upperLeft.map((tooth) => (
-                <ToothSVG
-                  key={tooth}
-                  toothNumber={tooth}
-                  findings={getToothConditions(tooth)}
-                  onClick={() => handleOpenToothModal(tooth)}
-                />
-              ))}
+            <div className="w-0.5 h-24 bg-primary/40 mx-0.5 sm:mx-1 rounded-full self-center" />
+
+            {/* 2nd Quadrant (Upper Left) */}
+            <div className="flex flex-col items-center">
+              <span className="text-[10px] font-bold text-blue-800 bg-blue-50 px-2.5 py-0.5 rounded-md mb-2 border border-blue-200">
+                {dentitionType === "permanent" ? "2do Cuadrante (21 al 28)" : "6to Cuadrante (61 al 65)"}
+              </span>
+              <div className="flex gap-1 sm:gap-2">
+                {activeTeeth.upperLeft.map((tooth) => (
+                  <ToothSVG
+                    key={tooth}
+                    toothNumber={tooth}
+                    findings={getToothConditions(tooth)}
+                    onClick={() => handleOpenToothModal(tooth)}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </div>
 
         {/* Lower Arch (Mandíbula Inferior) */}
-        <div className="text-center w-full max-w-4xl mt-4">
-          <div className="flex items-center justify-center gap-1 sm:gap-2">
-            {/* Lower Right Quadrant */}
-            <div className="flex gap-1 sm:gap-2">
-              {activeTeeth.lowerRight.map((tooth) => (
-                <ToothSVG
-                  key={tooth}
-                  toothNumber={tooth}
-                  findings={getToothConditions(tooth)}
-                  onClick={() => handleOpenToothModal(tooth)}
-                />
-              ))}
+        <div className="text-center w-full max-w-4xl pt-2 border-t border-surface-container-high/40">
+          <div className="flex items-start justify-center gap-2 sm:gap-4 mb-3">
+            {/* 4th Quadrant (Lower Right) */}
+            <div className="flex flex-col items-center">
+              <div className="flex gap-1 sm:gap-2">
+                {activeTeeth.lowerRight.map((tooth) => (
+                  <ToothSVG
+                    key={tooth}
+                    toothNumber={tooth}
+                    findings={getToothConditions(tooth)}
+                    onClick={() => handleOpenToothModal(tooth)}
+                  />
+                ))}
+              </div>
+              <span className="text-[10px] font-bold text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-md mt-2 border border-amber-200">
+                {dentitionType === "permanent" ? "4to Cuadrante (48 al 41)" : "8vo Cuadrante (85 al 81)"}
+              </span>
             </div>
+
             {/* Midline divider */}
-            <div className="w-0.5 h-20 bg-primary/40 mx-1 sm:mx-2 rounded-full" />
-            {/* Lower Left Quadrant */}
-            <div className="flex gap-1 sm:gap-2">
-              {activeTeeth.lowerLeft.map((tooth) => (
-                <ToothSVG
-                  key={tooth}
-                  toothNumber={tooth}
-                  findings={getToothConditions(tooth)}
-                  onClick={() => handleOpenToothModal(tooth)}
-                />
-              ))}
+            <div className="w-0.5 h-24 bg-primary/40 mx-0.5 sm:mx-1 rounded-full self-center" />
+
+            {/* 3rd Quadrant (Lower Left) */}
+            <div className="flex flex-col items-center">
+              <div className="flex gap-1 sm:gap-2">
+                {activeTeeth.lowerLeft.map((tooth) => (
+                  <ToothSVG
+                    key={tooth}
+                    toothNumber={tooth}
+                    findings={getToothConditions(tooth)}
+                    onClick={() => handleOpenToothModal(tooth)}
+                  />
+                ))}
+              </div>
+              <span className="text-[10px] font-bold text-purple-800 bg-purple-50 px-2.5 py-0.5 rounded-md mt-2 border border-purple-200">
+                {dentitionType === "permanent" ? "3er Cuadrante (31 al 38)" : "7mo Cuadrante (71 al 75)"}
+              </span>
             </div>
           </div>
-          <span className="text-xs font-bold uppercase tracking-wider text-primary block mt-3">
+
+          <span className="text-xs font-bold uppercase tracking-wider text-primary block mt-1">
             Arcada Inferior (Mandíbula)
           </span>
         </div>
