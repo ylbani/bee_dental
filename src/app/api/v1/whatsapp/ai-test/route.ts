@@ -72,3 +72,4 @@ Portal oficial de citas: https://beedental.vercel.app`;
     );
   }
 }
+

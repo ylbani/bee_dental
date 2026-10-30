@@ -21,6 +21,7 @@ import {
   CheckCircle,
   Trash2,
 } from "lucide-react";
+import ClinicalHistoryForm from "@/components/clinical/clinical-history-form";
 
 export interface PatientItem {
   id: string;
@@ -43,6 +44,7 @@ export default function PatientsPage() {
   const [search, setSearch] = useState("");
   const [showNewModal, setShowNewModal] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState<PatientItem | null>(null);
+  const [historyModalPatient, setHistoryModalPatient] = useState<PatientItem | null>(null);
   const [patients, setPatients] = useState<PatientItem[]>([]);
 
   useEffect(() => {
@@ -242,6 +244,14 @@ export default function PatientsPage() {
                     <td className="py-3 px-4 text-right">
                       <div className="flex items-center justify-end gap-1.5">
                         <button
+                          onClick={() => setHistoryModalPatient(pt)}
+                          className="px-2.5 py-1.5 rounded-lg bg-emerald-50 text-emerald-800 font-bold text-xs hover:bg-emerald-100 transition-colors flex items-center gap-1"
+                          title="Abrir Anamnesis e Historia Clínica"
+                        >
+                          <HeartPulse size={13} />
+                          <span>Historia</span>
+                        </button>
+                        <button
                           onClick={() => setSelectedPatient(pt)}
                           className="px-3 py-1.5 rounded-lg bg-surface-container text-primary font-bold text-xs hover:bg-primary hover:text-white transition-colors"
                           title="Ver Ficha Clínica Completa"
@@ -343,6 +353,16 @@ export default function PatientsPage() {
             {/* Acciones Rápidas de la Ficha */}
             <div className="pt-2 border-t border-surface-container-high flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    setHistoryModalPatient(selectedPatient);
+                    setSelectedPatient(null);
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3 py-2 bg-emerald-600 text-white text-xs font-bold rounded-xl hover:bg-emerald-700 transition-colors shadow-sm"
+                >
+                  <HeartPulse size={15} />
+                  <span>Historia Clínica Completa</span>
+                </button>
                 <Link
                   href="/dashboard/odontogram"
                   className="inline-flex items-center gap-1.5 px-3 py-2 bg-surface-container-high text-primary text-xs font-bold rounded-xl hover:bg-primary hover:text-white transition-colors"
@@ -368,6 +388,26 @@ export default function PatientsPage() {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Full Clinical History Modal */}
+      {historyModalPatient && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+          <div className="relative w-full max-w-4xl my-auto animate-in fade-in zoom-in-95">
+            <button
+              onClick={() => setHistoryModalPatient(null)}
+              className="absolute -top-3 -right-3 z-50 w-9 h-9 rounded-full bg-white shadow-lg border border-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center justify-center"
+            >
+              <X size={18} />
+            </button>
+            <ClinicalHistoryForm
+              patientId={historyModalPatient.id}
+              patientName={historyModalPatient.name}
+              recordNumber={historyModalPatient.recordNumber}
+              onSave={() => {}}
+            />
           </div>
         </div>
       )}

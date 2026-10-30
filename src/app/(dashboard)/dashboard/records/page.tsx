@@ -16,7 +16,11 @@ import {
   Smile,
   CheckCircle,
   Trash2,
+  HeartPulse,
+  ClipboardList,
+  Sparkles,
 } from "lucide-react";
+import ClinicalHistoryForm from "@/components/clinical/clinical-history-form";
 
 interface ClinicalRecordItem {
   id: string;
@@ -32,10 +36,16 @@ interface ClinicalRecordItem {
 }
 
 export default function RecordsPage() {
+  const [activeTab, setActiveTab] = useState<"evolutions" | "history">("evolutions");
   const [search, setSearch] = useState("");
   const [selectedRecord, setSelectedRecord] = useState<ClinicalRecordItem | null>(null);
   const [showNewEvolutionModal, setShowNewEvolutionModal] = useState(false);
   const [records, setRecords] = useState<ClinicalRecordItem[]>([]);
+  const [historyPatient, setHistoryPatient] = useState<{ id: string; name: string; recordNumber: string }>({
+    id: "p-general",
+    name: "Historia Clínica General",
+    recordNumber: "EXP-001",
+  });
 
   useEffect(() => {
     try {
@@ -123,7 +133,7 @@ export default function RecordsPage() {
         </div>
 
         <div className="flex items-center gap-2">
-          {records.length > 0 && (
+          {records.length > 0 && activeTab === "evolutions" && (
             <button
               onClick={handleClearAllRecords}
               className="px-3 py-2 rounded-xl border border-surface-container-high text-xs font-bold text-rose-700 hover:bg-rose-50 transition-colors flex items-center gap-1.5"
@@ -133,28 +143,77 @@ export default function RecordsPage() {
             </button>
           )}
 
-          <button
-            onClick={() => setShowNewEvolutionModal(true)}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary text-white text-xs sm:text-sm font-bold rounded-xl shadow-md hover:bg-primary-container transition-all"
-          >
-            <Plus size={16} />
-            <span>Nueva Entrada Clínica</span>
-          </button>
+          {activeTab === "evolutions" ? (
+            <button
+              onClick={() => setShowNewEvolutionModal(true)}
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary text-white text-xs sm:text-sm font-bold rounded-xl shadow-md hover:bg-primary-container transition-all"
+            >
+              <Plus size={16} />
+              <span>Nueva Entrada Clínica</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => setActiveTab("evolutions")}
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-surface-container-high text-on-surface text-xs sm:text-sm font-bold rounded-xl hover:bg-surface-container transition-all"
+            >
+              <span>Volver a Evoluciones</span>
+            </button>
+          )}
         </div>
       </div>
 
-      <div className="bg-surface-container-lowest p-4 rounded-2xl border border-surface-container-high/80 shadow-sm flex items-center justify-between">
-        <div className="relative w-full max-w-md">
-          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" />
-          <input
-            type="text"
-            placeholder="Buscar por paciente o expediente..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-10 pl-10 pr-4 bg-surface-container-low rounded-xl text-xs sm:text-sm border border-transparent focus:border-primary focus:bg-white focus:outline-none"
+      {/* Main Tabs */}
+      <div className="flex border-b border-surface-container-high gap-2">
+        <button
+          onClick={() => setActiveTab("evolutions")}
+          className={`pb-3 px-4 text-xs sm:text-sm font-bold transition-all border-b-2 flex items-center gap-2 ${
+            activeTab === "evolutions"
+              ? "border-primary text-primary"
+              : "border-transparent text-on-surface-variant hover:text-on-surface"
+          }`}
+        >
+          <ClipboardList size={16} />
+          <span>Evolución y Notas de Consulta ({records.length})</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab("history")}
+          className={`pb-3 px-4 text-xs sm:text-sm font-bold transition-all border-b-2 flex items-center gap-2 ${
+            activeTab === "history"
+              ? "border-primary text-primary"
+              : "border-transparent text-on-surface-variant hover:text-on-surface"
+          }`}
+        >
+          <HeartPulse size={16} />
+          <span>Historia Clínica &amp; Anamnesis Integral</span>
+          <span className="px-2 py-0.5 rounded-full text-[10px] bg-emerald-100 text-emerald-800 font-bold">
+            Formulario Completo
+          </span>
+        </button>
+      </div>
+
+      {activeTab === "history" ? (
+        <div className="space-y-4">
+          <ClinicalHistoryForm
+            patientId={historyPatient.id}
+            patientName={historyPatient.name}
+            recordNumber={historyPatient.recordNumber}
           />
         </div>
-      </div>
+      ) : (
+        <>
+          <div className="bg-surface-container-lowest p-4 rounded-2xl border border-surface-container-high/80 shadow-sm flex items-center justify-between">
+            <div className="relative w-full max-w-md">
+              <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" />
+              <input
+                type="text"
+                placeholder="Buscar por paciente o expediente..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full h-10 pl-10 pr-4 bg-surface-container-low rounded-xl text-xs sm:text-sm border border-transparent focus:border-primary focus:bg-white focus:outline-none"
+              />
+            </div>
+          </div>
 
       {filtered.length === 0 ? (
         <div className="bg-surface-container-lowest rounded-2xl border border-surface-container-high/80 p-12 text-center space-y-4 shadow-sm">
@@ -202,7 +261,7 @@ export default function RecordsPage() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 self-end sm:self-center">
+              <div className="flex items-center gap-2 self-end sm:self-center">
                 <span
                   className={`px-2.5 py-1 rounded-full text-xs font-bold ${
                     r.status === "CERRADA"
@@ -213,6 +272,20 @@ export default function RecordsPage() {
                   {r.status}
                 </span>
                 <button
+                  onClick={() => {
+                    setHistoryPatient({
+                      id: r.id,
+                      name: r.patient,
+                      recordNumber: r.recordNumber,
+                    });
+                    setActiveTab("history");
+                  }}
+                  className="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 font-bold text-xs hover:bg-emerald-100 transition-colors flex items-center gap-1"
+                >
+                  <HeartPulse size={13} />
+                  <span>Historia Clínica</span>
+                </button>
+                <button
                   onClick={() => setSelectedRecord(r)}
                   className="px-3 py-1.5 rounded-xl bg-surface-container text-primary font-bold text-xs hover:bg-surface-container-high transition-colors"
                 >
@@ -222,6 +295,8 @@ export default function RecordsPage() {
             </div>
           ))}
         </div>
+      )}
+      </>
       )}
 
       {/* Clinical Record Notes Modal */}
@@ -280,17 +355,34 @@ export default function RecordsPage() {
               </div>
             </div>
 
-            <div className="pt-3 border-t border-surface-container-high flex items-center justify-between">
+            <div className="pt-3 border-t border-surface-container-high flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-2 text-xs text-emerald-700 font-semibold">
                 <CheckCircle size={16} />
                 <span>Entrada firmada digitalmente por Dra. Leticia Bueno</span>
               </div>
-              <button
-                onClick={() => setSelectedRecord(null)}
-                className="px-4 py-2 rounded-xl bg-surface-container text-xs font-bold text-on-surface-variant hover:bg-surface-container-high"
-              >
-                Cerrar
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    setHistoryPatient({
+                      id: selectedRecord.id,
+                      name: selectedRecord.patient,
+                      recordNumber: selectedRecord.recordNumber,
+                    });
+                    setSelectedRecord(null);
+                    setActiveTab("history");
+                  }}
+                  className="px-3.5 py-2 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primary-container transition-colors flex items-center gap-1.5"
+                >
+                  <HeartPulse size={14} />
+                  <span>Ver Historia Clínica Completa</span>
+                </button>
+                <button
+                  onClick={() => setSelectedRecord(null)}
+                  className="px-4 py-2 rounded-xl bg-surface-container text-xs font-bold text-on-surface-variant hover:bg-surface-container-high"
+                >
+                  Cerrar
+                </button>
+              </div>
             </div>
           </div>
         </div>
