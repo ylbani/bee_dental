@@ -131,6 +131,39 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    if (action === "set_webhook") {
+      try {
+        const targetWebhook = body.webhookUrl || `${request.nextUrl.origin}/api/v1/whatsapp/webhook`;
+        const res = await fetch(`${baseServer}/webhook/set/${instance}`, {
+          method: "POST",
+          headers,
+          body: JSON.stringify({
+            webhook: {
+              enabled: true,
+              url: targetWebhook,
+              byEvents: false,
+              base64: false,
+              events: [
+                "MESSAGES_UPSERT",
+                "CONNECTION_UPDATE",
+              ],
+            },
+          }),
+          signal: AbortSignal.timeout(8000),
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          return NextResponse.json({ success: true, message: "Webhook configurado exitosamente", data, webhookUrl: targetWebhook });
+        }
+
+        const errText = await res.text();
+        return NextResponse.json({ success: false, error: `Error configurando webhook: ${errText}` });
+      } catch (err: any) {
+        return NextResponse.json({ success: false, error: err.message });
+      }
+    }
+
     if (action === "logout") {
       try {
         await fetch(`${baseServer}/instance/logout/${instance}`, {
