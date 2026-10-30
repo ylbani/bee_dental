@@ -17,9 +17,9 @@ export default function AuditPage() {
     {
       id: "aud-2",
       action: "WHATSAPP_CONFIGURED",
-      entity: "Evolution API (Docker)",
+      entity: "Canal de WhatsApp",
       user: "Dra. Leticia Bueno",
-      details: "Configuración de contenedor 97f72e3ca98c en DigitalOcean puerto 8080",
+      details: "Actualización de credenciales y enlace del canal oficial de mensajería",
       time: "28/10/2026 21:15:00",
       ip: "190.166.42.18",
     },

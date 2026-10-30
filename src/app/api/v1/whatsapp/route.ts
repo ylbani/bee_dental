@@ -5,11 +5,29 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { action, serverUrl, apiKey, instanceName, phone, message } = body;
 
-    const baseServer = (serverUrl || "http://localhost:8080").replace(/\/+$/, "");
-    const instance = instanceName || "bee-dental";
+    // Prioritize environment variables, fallback to request body or defaults
+    const baseServer = (
+      serverUrl ||
+      process.env.EVOLUTION_API_URL ||
+      process.env.WHATSAPP_API_URL ||
+      "http://localhost:8080"
+    ).replace(/\/+$/, "");
+
+    const instance =
+      instanceName ||
+      process.env.EVOLUTION_INSTANCE_NAME ||
+      process.env.WHATSAPP_INSTANCE ||
+      "bee-dental";
+
+    const resolvedApiKey =
+      apiKey ||
+      process.env.EVOLUTION_API_KEY ||
+      process.env.WHATSAPP_API_KEY ||
+      "";
+
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
-      apikey: apiKey || "",
+      apikey: resolvedApiKey,
     };
 
     if (action === "status") {
@@ -17,24 +35,24 @@ export async function POST(request: NextRequest) {
         const res = await fetch(`${baseServer}/instance/connectionState/${instance}`, {
           method: "GET",
           headers,
-          // 5s timeout
           signal: AbortSignal.timeout(5000),
         });
         if (res.ok) {
           const data = await res.json();
           return NextResponse.json({ success: true, data });
         }
+        return NextResponse.json({ success: true, data: { instance: { state: "close" } } });
       } catch (err: any) {
         return NextResponse.json({
           success: false,
-          error: `No se pudo conectar a Evolution API en ${baseServer}: ${err.message}`,
+          error: "El servicio de mensajería no respondió a la verificación de estado.",
         });
       }
     }
 
     if (action === "create_or_qr") {
       try {
-        // First check if instance exists
+        // 1. Try to fetch existing QR or connection
         const connectRes = await fetch(`${baseServer}/instance/connect/${instance}`, {
           method: "GET",
           headers,
@@ -51,13 +69,13 @@ export async function POST(request: NextRequest) {
           });
         }
 
-        // If not found, create instance
+        // 2. If not found, create instance
         const createRes = await fetch(`${baseServer}/instance/create`, {
           method: "POST",
           headers,
           body: JSON.stringify({
             instanceName: instance,
-            token: apiKey || "bee-token-secret",
+            token: resolvedApiKey || "bee-token-secret",
             qrcode: true,
             integration: "WHATSAPP-BAILEYS",
           }),
@@ -74,15 +92,14 @@ export async function POST(request: NextRequest) {
           });
         }
 
-        const errText = await createRes.text();
         return NextResponse.json({
           success: false,
-          error: `Error al crear/conectar instancia en Evolution API (${createRes.status}): ${errText}`,
+          error: "No se pudo generar el código QR. Verifica la conexión con el servidor de mensajería.",
         });
       } catch (err: any) {
         return NextResponse.json({
           success: false,
-          error: `Fallo de conexión con ${baseServer}: ${err.message}. Verifica que el contenedor Docker esté accesible en el puerto 8080.`,
+          error: "No fue posible comunicarse con el servicio de WhatsApp. Verifica que el servidor esté activo.",
         });
       }
     }
@@ -105,8 +122,10 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ success: true, message: "Mensaje enviado exitosamente", data });
         }
 
-        const errText = await res.text();
-        return NextResponse.json({ success: false, error: `Error Evolution API: ${errText}` });
+        return NextResponse.json({
+          success: false,
+          error: "El servicio no pudo entregar el mensaje al número indicado.",
+        });
       } catch (err: any) {
         return NextResponse.json({ success: false, error: err.message });
       }

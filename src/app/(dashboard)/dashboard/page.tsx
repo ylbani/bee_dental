@@ -189,10 +189,10 @@ export default function DashboardPage() {
           <div className="mt-4">
             <span className="font-display text-lg font-bold text-emerald-800 flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Evolution API</span>
+              <span>WhatsApp Activo</span>
             </span>
             <p className="text-xs text-on-surface-variant mt-1.5">
-              Docker en DigitalOcean (8080)
+              Canal de recordatorios conectado
             </p>
           </div>
         </div>
@@ -333,12 +333,12 @@ export default function DashboardPage() {
           <div className="bg-surface-container-lowest rounded-2xl border border-surface-container-high/80 p-5 shadow-sm">
             <h3 className="font-display font-bold text-base text-on-surface mb-3 flex items-center gap-2">
               <span className="material-symbols-outlined text-emerald-600 text-[20px]">mark_chat_unread</span>
-              <span>Canal WhatsApp DigitalOcean</span>
+              <span>Canal Oficial de WhatsApp</span>
             </h3>
 
             <div className="space-y-3">
               <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 leading-relaxed">
-                <strong>Evolution API Activa:</strong> Contenedor <code className="font-mono bg-white/70 px-1 py-0.5 rounded">97f72e3ca98c</code> listo para vincular por código QR desde Configuración.
+                <strong>Servicio Automatizado:</strong> Listo para sincronizar mediante código QR desde la sección de Configuración.
               </div>
             </div>
           </div>

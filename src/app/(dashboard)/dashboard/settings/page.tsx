@@ -26,9 +26,9 @@ export default function SettingsPage() {
   const [copiedKey, setCopiedKey] = useState(false);
 
   // WhatsApp Evolution API state
-  const [serverUrl, setServerUrl] = useState("http://127.0.0.1:8080");
-  const [apiKey, setApiKey] = useState("BEE_EVOLUTION_API_KEY_2026");
-  const [instanceName, setInstanceName] = useState("bee-dental");
+  const [serverUrl, setServerUrl] = useState("");
+  const [apiKey, setApiKey] = useState("");
+  const [instanceName, setInstanceName] = useState("");
   const [qrCodeData, setQrCodeData] = useState<string | null>(null);
   const [pairingCode, setPairingCode] = useState<string | null>(null);
   const [connectionStatus, setConnectionStatus] = useState<"disconnected" | "connecting" | "connected">("disconnected");
@@ -236,14 +236,14 @@ export default function SettingsPage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
-                  <Server size={20} />
+                  <Smartphone size={20} />
                 </div>
                 <div>
                   <h3 className="font-bold text-base text-on-surface">
-                    Servidor Evolution API (Docker • DigitalOcean)
+                    Canal Oficial de WhatsApp (Bee Dental)
                   </h3>
-                  <p className="text-xs text-on-surface-variant font-mono">
-                    Contenedor: 97f72e3ca98c • evoapicloud/evolution-api:latest • Puerto 8080
+                  <p className="text-xs text-on-surface-variant">
+                    Sincronización y recordatorios automatizados de citas para pacientes.
                   </p>
                 </div>
               </div>
@@ -278,44 +278,6 @@ export default function SettingsPage() {
               </div>
             </div>
 
-            {/* Docker Server Configuration Inputs */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-              <div className="space-y-1 sm:col-span-1">
-                <label className="text-xs font-bold text-on-surface">URL Servidor DigitalOcean *</label>
-                <input
-                  type="text"
-                  placeholder="http://TU_IP_DIGITAL_OCEAN:8080"
-                  value={serverUrl}
-                  onChange={(e) => setServerUrl(e.target.value)}
-                  className="w-full h-10 px-3 bg-surface-container-low rounded-xl text-xs font-mono border border-surface-container-high focus:outline-none focus:ring-2 focus:ring-primary"
-                />
-                <p className="text-[10px] text-on-surface-variant">Ej: http://159.65.XX.XX:8080</p>
-              </div>
-
-              <div className="space-y-1 sm:col-span-1">
-                <label className="text-xs font-bold text-on-surface">API Key de Evolution API *</label>
-                <input
-                  type="password"
-                  placeholder="Clave de autenticación apikey"
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                  className="w-full h-10 px-3 bg-surface-container-low rounded-xl text-xs font-mono border border-surface-container-high focus:outline-none focus:ring-2 focus:ring-primary"
-                />
-                <p className="text-[10px] text-on-surface-variant">Variable AUTHENTICATION_API_KEY</p>
-              </div>
-
-              <div className="space-y-1 sm:col-span-1">
-                <label className="text-xs font-bold text-on-surface">Nombre de Instancia</label>
-                <input
-                  type="text"
-                  value={instanceName}
-                  onChange={(e) => setInstanceName(e.target.value)}
-                  className="w-full h-10 px-3 bg-surface-container-low rounded-xl text-xs font-mono border border-surface-container-high focus:outline-none focus:ring-2 focus:ring-primary"
-                />
-                <p className="text-[10px] text-on-surface-variant">Instancia dedicada para la clínica</p>
-              </div>
-            </div>
-
             <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-surface-container-high">
               <button
                 onClick={handleCheckStatus}
@@ -345,6 +307,50 @@ export default function SettingsPage() {
                 </button>
               </div>
             </div>
+
+            {/* Parámetros Avanzados de Servidor (Ocultos por defecto para usuarios finales) */}
+            <details className="pt-2 border-t border-surface-container-high/60 group">
+              <summary className="cursor-pointer text-xs font-semibold text-on-surface-variant hover:text-on-surface flex items-center gap-1.5 select-none py-1">
+                <span>⚙️ Parámetros Avanzados de Servidor (Solo Administrador TI)</span>
+              </summary>
+              <div className="mt-3 p-3 bg-surface-container-low/50 rounded-xl space-y-3 text-xs">
+                <p className="text-[11px] text-on-surface-variant">
+                  Los parámetros de infraestructura se gestionan de forma segura en el servidor. Si requiere apuntar a una instancia o servidor alternativo, puede definirlos aquí:
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-bold text-on-surface">URL Servidor</label>
+                    <input
+                      type="text"
+                      placeholder="Por defecto (Servidor en producción)"
+                      value={serverUrl}
+                      onChange={(e) => setServerUrl(e.target.value)}
+                      className="w-full h-9 px-3 bg-surface-container-lowest rounded-lg text-xs font-mono border border-surface-container-high focus:outline-none focus:ring-1 focus:ring-primary"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-bold text-on-surface">API Key</label>
+                    <input
+                      type="password"
+                      placeholder="••••••••••••••••"
+                      value={apiKey}
+                      onChange={(e) => setApiKey(e.target.value)}
+                      className="w-full h-9 px-3 bg-surface-container-lowest rounded-lg text-xs font-mono border border-surface-container-high focus:outline-none focus:ring-1 focus:ring-primary"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-bold text-on-surface">Nombre de Instancia</label>
+                    <input
+                      type="text"
+                      placeholder="bee-dental"
+                      value={instanceName}
+                      onChange={(e) => setInstanceName(e.target.value)}
+                      className="w-full h-9 px-3 bg-surface-container-lowest rounded-lg text-xs font-mono border border-surface-container-high focus:outline-none focus:ring-1 focus:ring-primary"
+                    />
+                  </div>
+                </div>
+              </div>
+            </details>
           </div>
 
           {/* QR Code Presentation Box */}
@@ -408,10 +414,10 @@ export default function SettingsPage() {
             <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-start gap-3 text-amber-900 text-xs">
               <AlertTriangle size={18} className="shrink-0 text-amber-600 mt-0.5" />
               <div>
-                <p className="font-bold">Aviso de Conexión Evolution API:</p>
+                <p className="font-bold">Aviso del Canal de WhatsApp:</p>
                 <p>{errorMessage}</p>
                 <p className="mt-1 text-[11px] text-amber-800">
-                  Asegúrate de ingresar la IP pública de tu Droplet de DigitalOcean en el formato: <code className="font-mono bg-white/70 px-1 py-0.5 rounded">http://IP_DE_DIGITAL_OCEAN:8080</code>.
+                  Si no logra establecer conexión, verifique que la sesión no haya caducado en su teléfono móvil o contacte con soporte técnico.
                 </p>
               </div>
             </div>
@@ -427,7 +433,7 @@ export default function SettingsPage() {
             {testSuccess && (
               <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-2 text-emerald-900 text-xs font-semibold">
                 <CheckCircle2 size={16} className="text-emerald-600" />
-                <span>¡Mensaje enviado con éxito a través de Evolution API!</span>
+                <span>¡Mensaje de prueba enviado con éxito a través de WhatsApp!</span>
               </div>
             )}
 
