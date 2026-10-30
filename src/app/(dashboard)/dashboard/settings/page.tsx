@@ -23,6 +23,7 @@ import {
   Eye,
   EyeOff,
   MessageSquare,
+  Lock,
 } from "lucide-react";
 
 export default function SettingsPage() {
@@ -57,6 +58,13 @@ export default function SettingsPage() {
   const [aiTestLoading, setAiTestLoading] = useState(false);
   const [aiTestError, setAiTestError] = useState<string | null>(null);
 
+  // Superadmin Gate State
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const [showSuperAdminModal, setShowSuperAdminModal] = useState(false);
+  const [authUsername, setAuthUsername] = useState("");
+  const [authPassword, setAuthPassword] = useState("");
+  const [authError, setAuthError] = useState<string | null>(null);
+
   const apiKeySample = "bee_live_8496323258_9f7a8b3c2d1e0f4a";
 
   useEffect(() => {
@@ -68,6 +76,14 @@ export default function SettingsPage() {
       const storedModel = localStorage.getItem("bee_gemini_model");
       const storedAiEnabled = localStorage.getItem("bee_ai_enabled");
 
+      const sessionStr = localStorage.getItem("bee_auth_session");
+      if (sessionStr) {
+        const session = JSON.parse(sessionStr);
+        if (session.username === "ylbani" || session.isSuperAdmin) {
+          setIsSuperAdmin(true);
+        }
+      }
+
       if (storedUrl) setServerUrl(storedUrl);
       if (storedKey) setApiKey(storedKey);
       if (storedInstance) setInstanceName(storedInstance);
@@ -78,6 +94,48 @@ export default function SettingsPage() {
       console.error(e);
     }
   }, []);
+
+  const handleVerifySuperAdmin = (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthError(null);
+    if (authUsername.trim().toLowerCase() === "ylbani" && authPassword === "ythf240384") {
+      setIsSuperAdmin(true);
+      setShowSuperAdminModal(false);
+      setAuthPassword("");
+      try {
+        localStorage.setItem(
+          "bee_auth_session",
+          JSON.stringify({
+            username: "ylbani",
+            name: "Ylbani (Super Administrador)",
+            role: "SUPERADMIN",
+            isSuperAdmin: true,
+          })
+        );
+      } catch (err) {
+        console.error(err);
+      }
+    } else {
+      setAuthError("Credenciales de Super Usuario inválidas. Acceso denegado.");
+    }
+  };
+
+  const handleLockSuperAdmin = () => {
+    setIsSuperAdmin(false);
+    try {
+      localStorage.setItem(
+        "bee_auth_session",
+        JSON.stringify({
+          username: "l.bueno@beedental.es",
+          name: "Dra. Leticia Bueno",
+          role: "DOCTORA",
+          isSuperAdmin: false,
+        })
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const handleSave = () => {
     try {
@@ -397,49 +455,86 @@ export default function SettingsPage() {
               </div>
             </div>
 
-            {/* Parámetros Avanzados de Servidor (Ocultos por defecto para usuarios finales) */}
-            <details className="pt-2 border-t border-surface-container-high/60 group">
-              <summary className="cursor-pointer text-xs font-semibold text-on-surface-variant hover:text-on-surface flex items-center gap-1.5 select-none py-1">
-                <span>⚙️ Parámetros Avanzados de Servidor (Solo Administrador TI)</span>
-              </summary>
-              <div className="mt-3 p-3 bg-surface-container-low/50 rounded-xl space-y-3 text-xs">
-                <p className="text-[11px] text-on-surface-variant">
-                  Los parámetros de infraestructura se gestionan de forma segura en el servidor. Si requiere apuntar a una instancia o servidor alternativo, puede definirlos aquí:
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="space-y-1">
-                    <label className="text-[11px] font-bold text-on-surface">URL Servidor</label>
-                    <input
-                      type="text"
-                      placeholder="Por defecto (Servidor en producción)"
-                      value={serverUrl}
-                      onChange={(e) => setServerUrl(e.target.value)}
-                      className="w-full h-9 px-3 bg-surface-container-lowest rounded-lg text-xs font-mono border border-surface-container-high focus:outline-none focus:ring-1 focus:ring-primary"
-                    />
+            {/* Parámetros Avanzados de Servidor: Protegido por Super Usuario (ylbani) */}
+            {isSuperAdmin ? (
+              <div className="pt-3 border-t border-surface-container-high/60 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-xs font-bold text-on-surface flex items-center gap-1.5">
+                      <Shield size={14} className="text-emerald-600" />
+                      <span>Modo Super Administrador TI Activo (ylbani)</span>
+                    </span>
                   </div>
-                  <div className="space-y-1">
-                    <label className="text-[11px] font-bold text-on-surface">API Key</label>
-                    <input
-                      type="password"
-                      placeholder="••••••••••••••••"
-                      value={apiKey}
-                      onChange={(e) => setApiKey(e.target.value)}
-                      className="w-full h-9 px-3 bg-surface-container-lowest rounded-lg text-xs font-mono border border-surface-container-high focus:outline-none focus:ring-1 focus:ring-primary"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-[11px] font-bold text-on-surface">Nombre de Instancia</label>
-                    <input
-                      type="text"
-                      placeholder="bee-dental"
-                      value={instanceName}
-                      onChange={(e) => setInstanceName(e.target.value)}
-                      className="w-full h-9 px-3 bg-surface-container-lowest rounded-lg text-xs font-mono border border-surface-container-high focus:outline-none focus:ring-1 focus:ring-primary"
-                    />
+                  <button
+                    type="button"
+                    onClick={handleLockSuperAdmin}
+                    className="px-2.5 py-1 rounded-lg bg-surface-container text-[11px] font-bold text-rose-700 hover:bg-rose-50 border border-rose-200 transition-colors flex items-center gap-1"
+                  >
+                    <Lock size={12} />
+                    <span>Bloquear Parámetros TI</span>
+                  </button>
+                </div>
+
+                <div className="p-3.5 bg-surface-container-low/70 rounded-xl space-y-3 text-xs border border-surface-container-high">
+                  <p className="text-[11px] text-on-surface-variant">
+                    Credenciales de infraestructura del contenedor de WhatsApp en DigitalOcean. Protegido contra accesos no autorizados:
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div className="space-y-1">
+                      <label className="text-[11px] font-bold text-on-surface">URL Servidor</label>
+                      <input
+                        type="text"
+                        placeholder="http://104.248.63.217:8080"
+                        value={serverUrl}
+                        onChange={(e) => setServerUrl(e.target.value)}
+                        className="w-full h-9 px-3 bg-surface-container-lowest rounded-lg text-xs font-mono border border-surface-container-high focus:outline-none focus:ring-1 focus:ring-primary"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[11px] font-bold text-on-surface">API Key</label>
+                      <input
+                        type="password"
+                        placeholder="••••••••••••••••"
+                        value={apiKey}
+                        onChange={(e) => setApiKey(e.target.value)}
+                        className="w-full h-9 px-3 bg-surface-container-lowest rounded-lg text-xs font-mono border border-surface-container-high focus:outline-none focus:ring-1 focus:ring-primary"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[11px] font-bold text-on-surface">Nombre de Instancia</label>
+                      <input
+                        type="text"
+                        placeholder="bee-dental"
+                        value={instanceName}
+                        onChange={(e) => setInstanceName(e.target.value)}
+                        className="w-full h-9 px-3 bg-surface-container-lowest rounded-lg text-xs font-mono border border-surface-container-high focus:outline-none focus:ring-1 focus:ring-primary"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
-            </details>
+            ) : (
+              <div className="pt-3 border-t border-surface-container-high/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                <div className="flex items-center gap-2">
+                  <Lock size={15} className="text-amber-600 shrink-0" />
+                  <span className="text-xs text-on-surface-variant font-medium">
+                    Parámetros de Servidor e Infraestructura protegidos. Requiere <strong>Super Administrador</strong>.
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAuthError(null);
+                    setShowSuperAdminModal(true);
+                  }}
+                  className="px-3.5 py-1.5 rounded-xl bg-surface-container hover:bg-surface-container-high text-xs font-bold text-primary transition-colors flex items-center gap-1.5 shrink-0 border border-surface-container-high shadow-sm"
+                >
+                  <Key size={13} />
+                  <span>Desbloquear Modo TI</span>
+                </button>
+              </div>
+            )}
           </div>
 
           {/* QR Code Presentation Box */}
@@ -856,6 +951,80 @@ export default function SettingsPage() {
           </button>
         </div>
       </div>
+
+      {/* Superadmin Unlock Modal */}
+      {showSuperAdminModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-surface-container-lowest rounded-2xl border border-surface-container-high max-w-sm w-full p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between pb-2 border-b border-surface-container-high">
+              <div className="flex items-center gap-2 text-primary font-bold text-sm">
+                <Shield size={18} />
+                <span>Autenticación de Super Usuario</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowSuperAdminModal(false)}
+                className="text-on-surface-variant hover:text-on-surface"
+              >
+                ✕
+              </button>
+            </div>
+
+            <p className="text-xs text-on-surface-variant leading-relaxed">
+              Ingrese las credenciales del Super Administrador para ver y modificar los parámetros técnicos de infraestructura de WhatsApp y servidor:
+            </p>
+
+            {authError && (
+              <div className="p-2.5 bg-rose-50 border border-rose-200 text-rose-900 rounded-xl text-xs font-semibold">
+                {authError}
+              </div>
+            )}
+
+            <form onSubmit={handleVerifySuperAdmin} className="space-y-3">
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-on-surface">Usuario</label>
+                <input
+                  type="text"
+                  required
+                  autoFocus
+                  placeholder="Usuario Superadmin"
+                  value={authUsername}
+                  onChange={(e) => setAuthUsername(e.target.value)}
+                  className="w-full h-10 px-3 bg-surface-container-low rounded-xl text-xs border border-surface-container-high focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-on-surface">Contraseña</label>
+                <input
+                  type="password"
+                  required
+                  placeholder="Contraseña"
+                  value={authPassword}
+                  onChange={(e) => setAuthPassword(e.target.value)}
+                  className="w-full h-10 px-3 bg-surface-container-low rounded-xl text-xs border border-surface-container-high focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowSuperAdminModal(false)}
+                  className="px-3 py-2 rounded-xl text-xs font-bold text-on-surface-variant hover:bg-surface-container"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-primary text-white text-xs font-bold rounded-xl shadow-md hover:bg-primary-container"
+                >
+                  Validar y Desbloquear
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

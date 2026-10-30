@@ -14,6 +14,13 @@ interface StaffUser {
 export default function UsersPage() {
   const [staff, setStaff] = useState<StaffUser[]>([
     {
+      id: "u-super",
+      name: "Ylbani",
+      email: "ylbani@beedental.com",
+      role: "Super Administrador del Sistema & TI",
+      status: "Activo",
+    },
+    {
       id: "u-1",
       name: "Dra. Leticia Bueno",
       email: "l.bueno@beedental.es",

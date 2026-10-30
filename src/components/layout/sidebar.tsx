@@ -95,30 +95,65 @@ export function Sidebar({ userRole = "ADMIN" }: SidebarProps) {
 
       {/* Clinic & User footer badge */}
       <div className="p-3 border-t border-surface-container-high bg-surface-container-low/50">
-        <div className="flex items-center gap-3 overflow-hidden">
-          <div className="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-primary font-bold text-xs shrink-0 ring-2 ring-primary">
-            LB
-          </div>
-          {!collapsed && (
-            <div className="flex flex-col min-w-0 flex-1">
-              <span className="text-xs font-bold text-on-surface truncate">
-                Dra. Leticia Bueno
-              </span>
-              <span className="text-[10px] text-primary font-semibold truncate">
-                Directora Médica
-              </span>
-            </div>
-          )}
-          <Link
-            href="/"
-            className="text-on-surface-variant hover:text-error transition-colors p-1"
-            title="Volver a la Web pública"
-          >
-            <LogOut size={16} />
-          </Link>
-        </div>
+        <SidebarUserBadge collapsed={collapsed} />
       </div>
     </aside>
+  );
+}
+
+function SidebarUserBadge({ collapsed }: { collapsed: boolean }) {
+  const [user, setUser] = React.useState({
+    name: "Dra. Leticia Bueno",
+    roleLabel: "Directora Médica",
+    initials: "LB",
+  });
+
+  React.useEffect(() => {
+    try {
+      const stored = localStorage.getItem("bee_auth_session");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed.username === "ylbani" || parsed.isSuperAdmin) {
+          setUser({
+            name: "Ylbani",
+            roleLabel: "Super Administrador TI",
+            initials: "YB",
+          });
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
+
+  return (
+    <div className="flex items-center gap-3 overflow-hidden">
+      <div className="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-primary font-bold text-xs shrink-0 ring-2 ring-primary">
+        {user.initials}
+      </div>
+      {!collapsed && (
+        <div className="flex flex-col min-w-0 flex-1">
+          <span className="text-xs font-bold text-on-surface truncate">
+            {user.name}
+          </span>
+          <span className="text-[10px] text-primary font-semibold truncate">
+            {user.roleLabel}
+          </span>
+        </div>
+      )}
+      <Link
+        href="/login"
+        onClick={() => {
+          try {
+            localStorage.removeItem("bee_auth_session");
+          } catch (e) {}
+        }}
+        className="text-on-surface-variant hover:text-error transition-colors p-1"
+        title="Cerrar Sesión"
+      >
+        <LogOut size={16} />
+      </Link>
+    </div>
   );
 }
 
