@@ -24,13 +24,24 @@ import {
   EyeOff,
   MessageSquare,
   Lock,
+  Receipt,
+  ShieldCheck,
 } from "lucide-react";
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState<"general" | "operational" | "insurance" | "integrations">("integrations");
+  const [activeTab, setActiveTab] = useState<"general" | "operational" | "insurance" | "integrations" | "ecf">("ecf");
   const [insuranceEnabled, setInsuranceEnabled] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [copiedKey, setCopiedKey] = useState(false);
+
+  // e-CF DGII Hub state
+  const [ecfApiUrl, setEcfApiUrl] = useState("https://ecf.autodilerpro.com/api/v1");
+  const [ecfApiKey, setEcfApiKey] = useState("");
+  const [ecfRncEmisor, setEcfRncEmisor] = useState("132456789");
+  const [ecfChecking, setEcfChecking] = useState(false);
+  const [ecfCheckResult, setEcfCheckResult] = useState<string | null>(null);
+  const [ecfCheckSuccess, setEcfCheckSuccess] = useState(false);
+  const [ecfSequences, setEcfSequences] = useState<any | null>(null);
 
   // WhatsApp Evolution API state
   const [serverUrl, setServerUrl] = useState("");
@@ -76,6 +87,10 @@ export default function SettingsPage() {
       const storedModel = localStorage.getItem("bee_gemini_model");
       const storedAiEnabled = localStorage.getItem("bee_ai_enabled");
 
+      const storedEcfUrl = localStorage.getItem("bee_ecf_api_url");
+      const storedEcfKey = localStorage.getItem("bee_ecf_api_key");
+      const storedEcfRnc = localStorage.getItem("bee_ecf_rnc");
+
       const sessionStr = localStorage.getItem("bee_auth_session");
       if (sessionStr) {
         const session = JSON.parse(sessionStr);
@@ -90,6 +105,10 @@ export default function SettingsPage() {
       if (storedGemini) setGeminiKey(storedGemini);
       if (storedModel) setGeminiModel(storedModel);
       if (storedAiEnabled !== null) setAiEnabled(storedAiEnabled === "true");
+
+      if (storedEcfUrl) setEcfApiUrl(storedEcfUrl);
+      if (storedEcfKey) setEcfApiKey(storedEcfKey);
+      if (storedEcfRnc) setEcfRncEmisor(storedEcfRnc);
     } catch (e) {
       console.error(e);
     }
@@ -145,11 +164,42 @@ export default function SettingsPage() {
       localStorage.setItem("bee_gemini_key", geminiKey);
       localStorage.setItem("bee_gemini_model", geminiModel);
       localStorage.setItem("bee_ai_enabled", aiEnabled.toString());
+
+      localStorage.setItem("bee_ecf_api_url", ecfApiUrl);
+      localStorage.setItem("bee_ecf_api_key", ecfApiKey);
+      localStorage.setItem("bee_ecf_rnc", ecfRncEmisor);
     } catch (e) {
       console.error(e);
     }
     setSavedSuccess(true);
     setTimeout(() => setSavedSuccess(false), 3000);
+  };
+
+  const handleCheckEcfSequences = async () => {
+    setEcfChecking(true);
+    setEcfCheckResult(null);
+    try {
+      const res = await fetch("/api/v1/ecf?action=sequences", {
+        headers: {
+          "x-ecf-api-url": ecfApiUrl,
+          "x-ecf-api-key": ecfApiKey,
+        },
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setEcfSequences(data);
+        setEcfCheckSuccess(true);
+        setEcfCheckResult("¡Conexión exitosa con e-CF API Hub y DGII! Secuencias activas.");
+      } else {
+        setEcfCheckSuccess(false);
+        setEcfCheckResult(data.error || "No se pudo obtener las secuencias del Hub.");
+      }
+    } catch (err: any) {
+      setEcfCheckSuccess(false);
+      setEcfCheckResult(err.message);
+    } finally {
+      setEcfChecking(false);
+    }
   };
 
   const handleConfigureWebhook = async () => {
@@ -352,6 +402,7 @@ export default function SettingsPage() {
       {/* Tabs */}
       <div className="flex border-b border-surface-container-high overflow-x-auto gap-4 text-xs sm:text-sm font-bold">
         {[
+          { id: "ecf", label: "Facturación DGII (e-CF)", icon: Receipt },
           { id: "integrations", label: "WhatsApp & Evolution API", icon: Smartphone },
           { id: "general", label: "Datos Generales", icon: Building2 },
           { id: "operational", label: "Horarios y Agenda", icon: Clock },
@@ -913,6 +964,202 @@ export default function SettingsPage() {
                 className="w-full h-10 px-3 bg-surface-container-low rounded-xl border border-surface-container-high"
               />
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tab 5: Facturación Electrónica e-CF (DGII Ley 32-23) */}
+      {activeTab === "ecf" && (
+        <div className="space-y-6">
+          <div className="bg-surface-container-lowest p-6 rounded-3xl border border-surface-container-high/80 shadow-sm space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-surface-container-high">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-primary/20 via-emerald-100 to-teal-50 text-primary flex items-center justify-center font-bold shadow-inner">
+                  <Receipt size={24} className="text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-base text-on-surface flex items-center gap-2">
+                    <span>Middleware e-CF API Hub (DGII Ley 32-23)</span>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                      Oficial República Dominicana
+                    </span>
+                  </h3>
+                  <p className="text-xs text-on-surface-variant">
+                    Emisión automática de comprobantes electrónicos (E31, E32, E34) con firma digital y código QR.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 bg-emerald-100 text-emerald-800">
+                  <span className="w-2 h-2 rounded-full bg-emerald-600" />
+                  <span>Módulo e-CF Habilitado</span>
+                </span>
+              </div>
+            </div>
+
+            {/* Informative Highlights */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <div className="p-3.5 bg-surface-container-low rounded-xl space-y-1">
+                <span className="text-[10px] font-bold uppercase text-primary tracking-wider">
+                  Cumplimiento Fiscal
+                </span>
+                <p className="font-semibold text-on-surface">Ley 32-23 DGII</p>
+                <p className="text-[11px] text-on-surface-variant">
+                  Servicios odontológicos exentos de ITBIS (Art. 344 Ley 11-92).
+                </p>
+              </div>
+
+              <div className="p-3.5 bg-surface-container-low rounded-xl space-y-1">
+                <span className="text-[10px] font-bold uppercase text-primary tracking-wider">
+                  Firma y Seguridad
+                </span>
+                <p className="font-semibold text-on-surface">XMLDSig RSA-SHA256</p>
+                <p className="text-[11px] text-on-surface-variant">
+                  Generación de código de 6 caracteres y QR oficial para tickets térmicos.
+                </p>
+              </div>
+
+              <div className="p-3.5 bg-surface-container-low rounded-xl space-y-1">
+                <span className="text-[10px] font-bold uppercase text-primary tracking-wider">
+                  Flujo Dual e-CF / RFCE
+                </span>
+                <p className="font-semibold text-on-surface">Facturas &lt; RD$250,000</p>
+                <p className="text-[11px] text-on-surface-variant">
+                  Transmisión instantánea sin necesidad de pedir cédula a pacientes menores.
+                </p>
+              </div>
+            </div>
+
+            {/* Protected Technical Parameters */}
+            <div className="p-4 rounded-2xl bg-surface-container-low/60 border border-surface-container-high/80 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck size={18} className="text-primary" />
+                  <h4 className="text-xs font-bold text-on-surface">Parámetros de Conexión del Tenant e-CF</h4>
+                </div>
+                {!isSuperAdmin && (
+                  <span className="text-[11px] text-amber-800 font-semibold flex items-center gap-1">
+                    <Lock size={12} /> Protegido por Super Usuario
+                  </span>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="space-y-1 sm:col-span-1">
+                  <label className="text-xs font-bold text-on-surface">URL Base e-CF Hub *</label>
+                  <input
+                    type="text"
+                    disabled={!isSuperAdmin}
+                    value={ecfApiUrl}
+                    onChange={(e) => setEcfApiUrl(e.target.value)}
+                    placeholder="https://ecf.autodilerpro.com/api/v1"
+                    className={`w-full h-10 px-3 rounded-xl text-xs font-mono border border-surface-container-high ${
+                      isSuperAdmin
+                        ? "bg-white focus:outline-none focus:ring-2 focus:ring-primary"
+                        : "bg-surface-container-lowest text-on-surface-variant cursor-not-allowed"
+                    }`}
+                  />
+                  <p className="text-[10px] text-on-surface-variant">
+                    Opcional direct IP: http://104.248.63.217:4100/api/v1
+                  </p>
+                </div>
+
+                <div className="space-y-1 sm:col-span-1">
+                  <label className="text-xs font-bold text-on-surface flex items-center justify-between">
+                    <span>X-API-Key del Tenant *</span>
+                    {!isSuperAdmin && <span className="text-[10px] text-primary">Cifrada</span>}
+                  </label>
+                  <input
+                    type={isSuperAdmin ? "text" : "password"}
+                    disabled={!isSuperAdmin}
+                    value={ecfApiKey}
+                    onChange={(e) => setEcfApiKey(e.target.value)}
+                    placeholder="ecf_live_132456789_xxxxxxxx"
+                    className={`w-full h-10 px-3 rounded-xl text-xs font-mono border border-surface-container-high ${
+                      isSuperAdmin
+                        ? "bg-white focus:outline-none focus:ring-2 focus:ring-primary"
+                        : "bg-surface-container-lowest text-on-surface-variant cursor-not-allowed"
+                    }`}
+                  />
+                  <p className="text-[10px] text-on-surface-variant">Generada en Tenants &amp; Contingencia</p>
+                </div>
+
+                <div className="space-y-1 sm:col-span-1">
+                  <label className="text-xs font-bold text-on-surface">RNC Emisor (Bee Dental)</label>
+                  <input
+                    type="text"
+                    disabled={!isSuperAdmin}
+                    value={ecfRncEmisor}
+                    onChange={(e) => setEcfRncEmisor(e.target.value)}
+                    placeholder="132456789"
+                    className={`w-full h-10 px-3 rounded-xl text-xs font-mono border border-surface-container-high ${
+                      isSuperAdmin
+                        ? "bg-white focus:outline-none focus:ring-2 focus:ring-primary"
+                        : "bg-surface-container-lowest text-on-surface-variant cursor-not-allowed"
+                    }`}
+                  />
+                  <p className="text-[10px] text-on-surface-variant">RNC Oficial registrado en DGII</p>
+                </div>
+              </div>
+
+              {!isSuperAdmin && (
+                <div className="pt-2 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAuthError(null);
+                      setShowSuperAdminModal(true);
+                    }}
+                    className="px-3.5 py-1.5 rounded-xl bg-surface-container hover:bg-surface-container-high text-xs font-bold text-primary transition-colors flex items-center gap-1.5 border border-surface-container-high shadow-sm"
+                  >
+                    <Key size={13} />
+                    <span>Desbloquear Edición de Llaves (Modo TI)</span>
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Test & Verification Action */}
+            <div className="p-4 rounded-xl bg-surface-container-low/60 border border-surface-container-high flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <p className="text-xs font-bold text-on-surface">Diagnóstico y Secuencias e-NCF</p>
+                <p className="text-[11px] text-on-surface-variant">
+                  Consulta el saldo de secuencias disponibles (E31, E32, E34) y verifica la respuesta del Hub de facturación.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleCheckEcfSequences}
+                disabled={ecfChecking}
+                className="px-4 py-2 bg-primary text-white text-xs font-bold rounded-xl shadow hover:bg-primary-container transition-all flex items-center gap-2 shrink-0"
+              >
+                <RefreshCw size={14} className={ecfChecking ? "animate-spin" : ""} />
+                <span>{ecfChecking ? "Consultando DGII..." : "Verificar Secuencias e-CF"}</span>
+              </button>
+            </div>
+
+            {ecfCheckResult && (
+              <div
+                className={`p-3.5 rounded-2xl border text-xs leading-relaxed animate-in fade-in ${
+                  ecfCheckSuccess
+                    ? "bg-emerald-50 border-emerald-200 text-emerald-950 font-semibold"
+                    : "bg-amber-50 border-amber-200 text-amber-950"
+                }`}
+              >
+                <p className="font-bold flex items-center gap-1.5">
+                  {ecfCheckSuccess ? <CheckCircle2 size={16} className="text-emerald-600" /> : <AlertTriangle size={16} className="text-amber-600" />}
+                  <span>Resultado de Consulta e-CF Hub:</span>
+                </p>
+                <p className="mt-1">{ecfCheckResult}</p>
+                {ecfSequences && (
+                  <pre className="mt-2 p-2.5 bg-white/80 rounded-xl text-[11px] font-mono overflow-x-auto border border-surface-container-high">
+                    {JSON.stringify(ecfSequences, null, 2)}
+                  </pre>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}
